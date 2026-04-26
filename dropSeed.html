@@ -1,0 +1,3140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DropSeed - BIP39 Seed Builder</title>
+    <style>
+      :root {
+        --bg: #080c0f;
+        --surface: #0d1318;
+        --surface2: #111820;
+        --border: #1e2d3a;
+        --accent: #00ff88;
+        --accent2: #00c4ff;
+        --accent3: #ff6b35;
+        --text: #c8d8e4;
+        --muted: #4a6070;
+        --slot-empty: #0a1520;
+        --slot-filled: #0d1f14;
+        --slot-border-empty: #1e3040;
+        --slot-border-filled: #00ff8844;
+        --danger: #ff3b5c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: monospace;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 24px,
+            #ffffff04 24px,
+            #ffffff04 25px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 24px,
+            #ffffff03 24px,
+            #ffffff03 25px
+          );
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .header {
+        position: relative;
+        z-index: 10;
+        padding: 28px 40px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+
+      .logo-name {
+        font-family: sans-serif;
+        font-weight: 800;
+        font-size: 26px;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+
+      .logo-name span {
+        color: var(--accent);
+      }
+
+      .logo-tag {
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+        padding: 3px 8px;
+        border-radius: 3px;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 12px var(--accent);
+        animation: pulse 2s infinite;
+        display: inline-block;
+        margin-right: 8px;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .offline-badge {
+        font-size: 10px;
+        color: var(--accent);
+        letter-spacing: 2px;
+      }
+
+      .main {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        height: calc(100vh - 73px);
+        overflow: hidden;
+      }
+
+      .pool-panel {
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .panel-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        user-select: none;
+      }
+
+      .search-wrap {
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--accent);
+        font-family: monospace;
+        font-size: 13px;
+        padding: 9px 12px 9px 34px;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .search-input:focus {
+        border-color: var(--accent);
+      }
+      .search-input::placeholder {
+        color: var(--muted);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .result-count {
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 8px;
+      }
+
+      .result-count span {
+        color: var(--accent);
+      }
+
+      .word-pool {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-content: flex-start;
+      }
+
+      .word-pool::-webkit-scrollbar {
+        width: 4px;
+      }
+      .word-pool::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .word-pool::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+      }
+
+      .word-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        cursor: grab;
+        font-size: 12px;
+        font-family: monospace;
+        color: var(--text);
+        transition: all 0.15s;
+        user-select: none;
+        position: relative;
+      }
+
+      .word-chip:active {
+        cursor: grabbing;
+      }
+
+      .word-chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: #00ff8808;
+        transform: translateY(-1px);
+      }
+
+      .chip-use-count {
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--accent3);
+        background: #ff6b3520;
+        border: 1px solid #ff6b3540;
+        border-radius: 3px;
+        padding: 1px 4px;
+        line-height: 1;
+      }
+
+      .word-chip.used {
+        opacity: 0.2;
+        pointer-events: none;
+      }
+
+      .chip-idx {
+        font-size: 9px;
+        color: var(--muted);
+      }
+
+      .chip-bits {
+        font-size: 8px;
+        color: #2a4a5a;
+        letter-spacing: 0.5px;
+      }
+
+      .word-chip:hover .chip-bits {
+        color: #3a6a4a;
+      }
+
+      .builder-panel {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+
+      .slots-wrap {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+      }
+
+      .slots-wrap::-webkit-scrollbar {
+        width: 4px;
+      }
+      .slots-wrap::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .slots-wrap::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 2px;
+      }
+
+      .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .slot {
+        min-height: 72px;
+        border: 1px dashed var(--slot-border-empty);
+        border-radius: 6px;
+        background: var(--slot-empty);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.15s;
+        cursor: default;
+      }
+
+      .slot.drag-over {
+        border-color: var(--accent);
+        background: #00ff8808;
+        box-shadow: 0 0 20px #00ff8812;
+      }
+
+      .slot.filled {
+        border: 1px solid var(--slot-border-filled);
+        background: var(--slot-filled);
+      }
+
+      .slot.slot-24 {
+        border-style: solid;
+        border-color: var(--accent2);
+        background: #00c4ff06;
+      }
+
+      .slot-num {
+        position: absolute;
+        top: 5px;
+        left: 8px;
+        font-size: 9px;
+        color: var(--muted);
+      }
+
+      .slot.slot-24 .slot-num {
+        color: var(--accent2);
+      }
+
+      .slot-word {
+        font-family: sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        color: var(--accent);
+        letter-spacing: 0.3px;
+      }
+
+      .slot-bits {
+        font-size: 8px;
+        color: var(--muted);
+        margin-top: 2px;
+        letter-spacing: 0.5px;
+      }
+
+      .slot-empty-hint {
+        font-size: 9px;
+        color: #1a2e3a;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .slot-remove {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        font-size: 11px;
+        color: var(--muted);
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s;
+        line-height: 1;
+      }
+
+      .slot.filled:hover .slot-remove {
+        opacity: 1;
+        color: var(--danger);
+      }
+
+      .candidate-section {
+        padding: 16px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .candidate-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+      }
+
+      .candidate-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .candidates-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .candidate-chip {
+        padding: 7px 14px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--surface2);
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--muted);
+        cursor: not-allowed;
+        transition: all 0.2s;
+      }
+
+      .candidate-chip.active {
+        cursor: pointer;
+        color: var(--accent2);
+        border-color: var(--accent2);
+        background: #00c4ff08;
+      }
+
+      .candidate-chip.active:hover {
+        background: #00c4ff14;
+        box-shadow: 0 0 16px #00c4ff20;
+      }
+
+      .candidate-chip.selected {
+        background: var(--accent2);
+        color: #000;
+        font-weight: 700;
+        border-color: var(--accent2);
+      }
+
+      .candidate-idx {
+        font-size: 9px;
+        margin-right: 4px;
+        opacity: 0.6;
+      }
+
+      .bit-strip-section {
+        padding: 12px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--bg);
+      }
+
+      .bit-strip-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        user-select: none;
+      }
+
+      .bit-strip {
+        display: flex;
+        gap: 1px;
+        flex-wrap: wrap;
+      }
+
+      .bit {
+        width: 8px;
+        height: 14px;
+        border-radius: 1px;
+        background: #0d1820;
+        border: 1px solid #1a2a35;
+        transition: all 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 6px;
+        color: transparent;
+      }
+
+      .bit.b1 {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #000;
+        font-weight: 700;
+        box-shadow: 0 0 4px var(--accent);
+      }
+
+      .bit.b0 {
+        background: #0a1e14;
+        border-color: #1a3a24;
+        color: #2a6a40;
+      }
+
+      .bit.checksum {
+        background: #003355;
+        border-color: var(--accent2);
+      }
+
+      .bit.b1.checksum {
+        background: var(--accent2);
+        border-color: var(--accent2);
+        box-shadow: 0 0 4px var(--accent2);
+      }
+
+      .bit-group-sep {
+        width: 3px;
+        flex-shrink: 0;
+      }
+
+      .progress-section {
+        padding: 10px 24px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: var(--surface);
+      }
+
+      .progress-bar-wrap {
+        flex: 1;
+        height: 3px;
+        background: var(--border);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        border-radius: 2px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
+
+      .progress-text {
+        font-size: 10px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .progress-text span {
+        color: var(--accent);
+      }
+
+      .output-section {
+        padding: 14px 24px;
+        border-top: 1px solid var(--border);
+        background: var(--surface2);
+        display: none;
+      }
+
+      .output-section.visible {
+        display: block;
+      }
+
+      .output-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .seed-phrase {
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--text);
+        line-height: 1.8;
+        letter-spacing: 0.3px;
+      }
+
+      .seed-word {
+        display: inline-block;
+        margin-right: 4px;
+      }
+
+      .seed-word .sw-num {
+        font-size: 9px;
+        color: var(--muted);
+        margin-right: 2px;
+      }
+
+      .seed-word .sw-word {
+        color: var(--accent);
+      }
+
+      .seed-word:nth-child(12n)::after {
+        content: "\A";
+        white-space: pre;
+      }
+
+      .output-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 7px 16px;
+        font-family: monospace;
+        font-size: 11px;
+        letter-spacing: 1px;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 1px solid;
+        transition: all 0.15s;
+        text-transform: uppercase;
+      }
+
+      .btn-copy {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--muted);
+      }
+
+      .btn-copy:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .btn-reset {
+        background: transparent;
+        border-color: var(--border);
+        color: var(--muted);
+      }
+
+      .btn-reset:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .dragging {
+        opacity: 0.4;
+        transform: scale(0.95);
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 1px;
+        text-align: center;
+        gap: 8px;
+      }
+
+      .empty-state .big {
+        font-size: 28px;
+      }
+
+      [data-tip] {
+        position: relative;
+      }
+
+      [data-tip]:hover::after {
+        content: attr(data-tip);
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1a2a35;
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 3px;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 100;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo">
+        <div class="logo-name">Drop<span>Seed</span></div>
+        <div class="logo-tag">BIP39 BUILDER</div>
+      </div>
+      <div class="offline-badge">
+        <span class="status-dot"></span>100% OFFLINE · NO NETWORK CALLS
+      </div>
+    </header>
+
+    <!-- I AM WORKING ON 199IQ PROJECT ( I AM WILLING TO IMPLEMENT SUPER CREATIVE IDEAS ) -->
+
+    <div class="main">
+      <div class="pool-panel">
+        <div class="panel-header">
+          <div class="panel-label">Word Pool of 2048 words</div>
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input
+              type="text"
+              class="search-input"
+              id="searchInput"
+              placeholder="search word or #index..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <div class="result-count" id="resultCount">
+            <span>2048</span> words
+          </div>
+        </div>
+        <div class="word-pool" id="wordPool"></div>
+      </div>
+
+      <div class="builder-panel">
+        <div class="slots-wrap">
+          <div class="panel-label" style="margin-bottom: 10px">
+            Drag words into slots ( 23 of 24 )
+          </div>
+          <div class="slots-grid" id="slotsGrid"></div>
+
+          <div class="panel-label" style="margin-bottom: 10px">
+            Word 24, Checksum-derived (choose one of 8)
+          </div>
+          <div id="slot24Wrap">
+            <div class="slot slot-24" id="slot24">
+              <div class="slot-num">24</div>
+              <div class="slot-empty-hint">awaiting...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-section">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text">
+            <span id="filledCount">0</span>/23 words placed
+          </div>
+        </div>
+
+        <div class="candidate-section">
+          <div class="candidate-label">24th word candidates (8 possible)</div>
+          <div class="candidates-row" id="candidatesRow">
+            <div class="empty-state">
+              Fill all 23 slots to reveal checksum candidates
+            </div>
+          </div>
+        </div>
+
+        <div class="bit-strip-section">
+          <div class="bit-strip-label">253-bit entropy strip - live</div>
+          <div class="bit-strip" id="bitStrip"></div>
+        </div>
+
+        <div class="output-section" id="outputSection">
+          <div class="output-label">⚡ Complete 24-word seed phrase</div>
+          <div class="seed-phrase" id="seedOutput"></div>
+          <div class="output-actions">
+            <button class="btn btn-copy" id="copyBtn">Copy Seed</button>
+            <button class="btn btn-reset" id="resetBtn">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const WORDLIST = [
+        "abandon",
+        "ability",
+        "able",
+        "about",
+        "above",
+        "absent",
+        "absorb",
+        "abstract",
+        "absurd",
+        "abuse",
+        "access",
+        "accident",
+        "account",
+        "accuse",
+        "achieve",
+        "acid",
+        "acoustic",
+        "acquire",
+        "across",
+        "act",
+        "action",
+        "actor",
+        "actress",
+        "actual",
+        "adapt",
+        "add",
+        "addict",
+        "address",
+        "adjust",
+        "admit",
+        "adult",
+        "advance",
+        "advice",
+        "aerobic",
+        "affair",
+        "afford",
+        "afraid",
+        "again",
+        "age",
+        "agent",
+        "agree",
+        "ahead",
+        "aim",
+        "air",
+        "airport",
+        "aisle",
+        "alarm",
+        "album",
+        "alcohol",
+        "alert",
+        "alien",
+        "all",
+        "alley",
+        "allow",
+        "almost",
+        "alone",
+        "alpha",
+        "already",
+        "also",
+        "alter",
+        "always",
+        "amateur",
+        "amazing",
+        "among",
+        "amount",
+        "amused",
+        "analyst",
+        "anchor",
+        "ancient",
+        "anger",
+        "angle",
+        "angry",
+        "animal",
+        "ankle",
+        "announce",
+        "annual",
+        "another",
+        "answer",
+        "antenna",
+        "antique",
+        "anxiety",
+        "any",
+        "apart",
+        "apology",
+        "appear",
+        "apple",
+        "approve",
+        "april",
+        "arch",
+        "arctic",
+        "area",
+        "arena",
+        "argue",
+        "arm",
+        "armed",
+        "armor",
+        "army",
+        "around",
+        "arrange",
+        "arrest",
+        "arrive",
+        "arrow",
+        "art",
+        "artefact",
+        "artist",
+        "artwork",
+        "ask",
+        "aspect",
+        "assault",
+        "asset",
+        "assist",
+        "assume",
+        "asthma",
+        "athlete",
+        "atom",
+        "attack",
+        "attend",
+        "attitude",
+        "attract",
+        "auction",
+        "audit",
+        "august",
+        "aunt",
+        "author",
+        "auto",
+        "autumn",
+        "average",
+        "avocado",
+        "avoid",
+        "awake",
+        "aware",
+        "away",
+        "awesome",
+        "awful",
+        "awkward",
+        "axis",
+        "baby",
+        "bachelor",
+        "bacon",
+        "badge",
+        "bag",
+        "balance",
+        "balcony",
+        "ball",
+        "bamboo",
+        "banana",
+        "banner",
+        "bar",
+        "barely",
+        "bargain",
+        "barrel",
+        "base",
+        "basic",
+        "basket",
+        "battle",
+        "beach",
+        "bean",
+        "beauty",
+        "because",
+        "become",
+        "beef",
+        "before",
+        "begin",
+        "behave",
+        "behind",
+        "believe",
+        "below",
+        "belt",
+        "bench",
+        "benefit",
+        "best",
+        "betray",
+        "better",
+        "between",
+        "beyond",
+        "bicycle",
+        "bid",
+        "bike",
+        "bind",
+        "biology",
+        "bird",
+        "birth",
+        "bitter",
+        "black",
+        "blade",
+        "blame",
+        "blanket",
+        "blast",
+        "bleak",
+        "bless",
+        "blind",
+        "blood",
+        "blossom",
+        "blouse",
+        "blue",
+        "blur",
+        "blush",
+        "board",
+        "boat",
+        "body",
+        "boil",
+        "bomb",
+        "bone",
+        "bonus",
+        "book",
+        "boost",
+        "border",
+        "boring",
+        "borrow",
+        "boss",
+        "bottom",
+        "bounce",
+        "box",
+        "boy",
+        "bracket",
+        "brain",
+        "brand",
+        "brass",
+        "brave",
+        "bread",
+        "breeze",
+        "brick",
+        "bridge",
+        "brief",
+        "bright",
+        "bring",
+        "brisk",
+        "broccoli",
+        "broken",
+        "bronze",
+        "broom",
+        "brother",
+        "brown",
+        "brush",
+        "bubble",
+        "buddy",
+        "budget",
+        "buffalo",
+        "build",
+        "bulb",
+        "bulk",
+        "bullet",
+        "bundle",
+        "bunker",
+        "burden",
+        "burger",
+        "burst",
+        "bus",
+        "business",
+        "busy",
+        "butter",
+        "buyer",
+        "buzz",
+        "cabbage",
+        "cabin",
+        "cable",
+        "cactus",
+        "cage",
+        "cake",
+        "call",
+        "calm",
+        "camera",
+        "camp",
+        "can",
+        "canal",
+        "cancel",
+        "candy",
+        "cannon",
+        "canoe",
+        "canvas",
+        "canyon",
+        "capable",
+        "capital",
+        "captain",
+        "car",
+        "carbon",
+        "card",
+        "cargo",
+        "carpet",
+        "carry",
+        "cart",
+        "case",
+        "cash",
+        "casino",
+        "castle",
+        "casual",
+        "cat",
+        "catalog",
+        "catch",
+        "category",
+        "cattle",
+        "caught",
+        "cause",
+        "caution",
+        "cave",
+        "ceiling",
+        "celery",
+        "cement",
+        "census",
+        "century",
+        "cereal",
+        "certain",
+        "chair",
+        "chalk",
+        "champion",
+        "change",
+        "chaos",
+        "chapter",
+        "charge",
+        "chase",
+        "chat",
+        "cheap",
+        "check",
+        "cheese",
+        "chef",
+        "cherry",
+        "chest",
+        "chicken",
+        "chief",
+        "child",
+        "chimney",
+        "choice",
+        "choose",
+        "chronic",
+        "chuckle",
+        "chunk",
+        "churn",
+        "cigar",
+        "cinnamon",
+        "circle",
+        "citizen",
+        "city",
+        "civil",
+        "claim",
+        "clap",
+        "clarify",
+        "claw",
+        "clay",
+        "clean",
+        "clerk",
+        "clever",
+        "click",
+        "client",
+        "cliff",
+        "climb",
+        "clinic",
+        "clip",
+        "clock",
+        "clog",
+        "close",
+        "cloth",
+        "cloud",
+        "clown",
+        "club",
+        "clump",
+        "cluster",
+        "clutch",
+        "coach",
+        "coast",
+        "coconut",
+        "code",
+        "coffee",
+        "coil",
+        "coin",
+        "collect",
+        "color",
+        "column",
+        "combine",
+        "come",
+        "comfort",
+        "comic",
+        "common",
+        "company",
+        "concert",
+        "conduct",
+        "confirm",
+        "congress",
+        "connect",
+        "consider",
+        "control",
+        "convince",
+        "cook",
+        "cool",
+        "copper",
+        "copy",
+        "coral",
+        "core",
+        "corn",
+        "correct",
+        "cost",
+        "cotton",
+        "couch",
+        "country",
+        "couple",
+        "course",
+        "cousin",
+        "cover",
+        "coyote",
+        "crack",
+        "cradle",
+        "craft",
+        "cram",
+        "crane",
+        "crash",
+        "crater",
+        "crawl",
+        "crazy",
+        "cream",
+        "credit",
+        "creek",
+        "crew",
+        "cricket",
+        "crime",
+        "crisp",
+        "critic",
+        "crop",
+        "cross",
+        "crouch",
+        "crowd",
+        "crucial",
+        "cruel",
+        "cruise",
+        "crumble",
+        "crunch",
+        "crush",
+        "cry",
+        "crystal",
+        "cube",
+        "culture",
+        "cup",
+        "cupboard",
+        "curious",
+        "current",
+        "curtain",
+        "curve",
+        "cushion",
+        "custom",
+        "cute",
+        "cycle",
+        "dad",
+        "damage",
+        "damp",
+        "dance",
+        "danger",
+        "daring",
+        "dash",
+        "daughter",
+        "dawn",
+        "day",
+        "deal",
+        "debate",
+        "debris",
+        "decade",
+        "december",
+        "decide",
+        "decline",
+        "decorate",
+        "decrease",
+        "deer",
+        "defense",
+        "define",
+        "defy",
+        "degree",
+        "delay",
+        "deliver",
+        "demand",
+        "demise",
+        "denial",
+        "dentist",
+        "deny",
+        "depart",
+        "depend",
+        "deposit",
+        "depth",
+        "deputy",
+        "derive",
+        "describe",
+        "desert",
+        "design",
+        "desk",
+        "despair",
+        "destroy",
+        "detail",
+        "detect",
+        "develop",
+        "device",
+        "devote",
+        "diagram",
+        "dial",
+        "diamond",
+        "diary",
+        "dice",
+        "diesel",
+        "diet",
+        "differ",
+        "digital",
+        "dignity",
+        "dilemma",
+        "dinner",
+        "dinosaur",
+        "direct",
+        "dirt",
+        "disagree",
+        "discover",
+        "disease",
+        "dish",
+        "dismiss",
+        "disorder",
+        "display",
+        "distance",
+        "divert",
+        "divide",
+        "divorce",
+        "dizzy",
+        "doctor",
+        "document",
+        "dog",
+        "doll",
+        "dolphin",
+        "domain",
+        "donate",
+        "donkey",
+        "donor",
+        "door",
+        "dose",
+        "double",
+        "dove",
+        "draft",
+        "dragon",
+        "drama",
+        "drastic",
+        "draw",
+        "dream",
+        "dress",
+        "drift",
+        "drill",
+        "drink",
+        "drip",
+        "drive",
+        "drop",
+        "drum",
+        "dry",
+        "duck",
+        "dumb",
+        "dune",
+        "during",
+        "dust",
+        "dutch",
+        "duty",
+        "dwarf",
+        "dynamic",
+        "eager",
+        "eagle",
+        "early",
+        "earn",
+        "earth",
+        "easily",
+        "east",
+        "easy",
+        "echo",
+        "ecology",
+        "economy",
+        "edge",
+        "edit",
+        "educate",
+        "effort",
+        "egg",
+        "eight",
+        "either",
+        "elbow",
+        "elder",
+        "electric",
+        "elegant",
+        "element",
+        "elephant",
+        "elevator",
+        "elite",
+        "else",
+        "embark",
+        "embody",
+        "embrace",
+        "emerge",
+        "emotion",
+        "employ",
+        "empower",
+        "empty",
+        "enable",
+        "enact",
+        "end",
+        "endless",
+        "endorse",
+        "enemy",
+        "energy",
+        "enforce",
+        "engage",
+        "engine",
+        "enhance",
+        "enjoy",
+        "enlist",
+        "enough",
+        "enrich",
+        "enroll",
+        "ensure",
+        "enter",
+        "entire",
+        "entry",
+        "envelope",
+        "episode",
+        "equal",
+        "equip",
+        "era",
+        "erase",
+        "erode",
+        "erosion",
+        "error",
+        "erupt",
+        "escape",
+        "essay",
+        "essence",
+        "estate",
+        "eternal",
+        "ethics",
+        "evidence",
+        "evil",
+        "evoke",
+        "evolve",
+        "exact",
+        "example",
+        "excess",
+        "exchange",
+        "excite",
+        "exclude",
+        "excuse",
+        "execute",
+        "exercise",
+        "exhaust",
+        "exhibit",
+        "exile",
+        "exist",
+        "exit",
+        "exotic",
+        "expand",
+        "expect",
+        "expire",
+        "explain",
+        "expose",
+        "express",
+        "extend",
+        "extra",
+        "eye",
+        "eyebrow",
+        "fabric",
+        "face",
+        "faculty",
+        "fade",
+        "faint",
+        "faith",
+        "fall",
+        "false",
+        "fame",
+        "family",
+        "famous",
+        "fan",
+        "fancy",
+        "fantasy",
+        "farm",
+        "fashion",
+        "fat",
+        "fatal",
+        "father",
+        "fatigue",
+        "fault",
+        "favorite",
+        "feature",
+        "february",
+        "federal",
+        "fee",
+        "feed",
+        "feel",
+        "female",
+        "fence",
+        "festival",
+        "fetch",
+        "fever",
+        "few",
+        "fiber",
+        "fiction",
+        "field",
+        "figure",
+        "file",
+        "film",
+        "filter",
+        "final",
+        "find",
+        "fine",
+        "finger",
+        "finish",
+        "fire",
+        "firm",
+        "first",
+        "fiscal",
+        "fish",
+        "fit",
+        "fitness",
+        "fix",
+        "flag",
+        "flame",
+        "flash",
+        "flat",
+        "flavor",
+        "flee",
+        "flight",
+        "flip",
+        "float",
+        "flock",
+        "floor",
+        "flower",
+        "fluid",
+        "flush",
+        "fly",
+        "foam",
+        "focus",
+        "fog",
+        "foil",
+        "fold",
+        "follow",
+        "food",
+        "foot",
+        "force",
+        "forest",
+        "forget",
+        "fork",
+        "fortune",
+        "forum",
+        "forward",
+        "fossil",
+        "foster",
+        "found",
+        "fox",
+        "fragile",
+        "frame",
+        "frequent",
+        "fresh",
+        "friend",
+        "fringe",
+        "frog",
+        "front",
+        "frost",
+        "frown",
+        "frozen",
+        "fruit",
+        "fuel",
+        "fun",
+        "funny",
+        "furnace",
+        "fury",
+        "future",
+        "gadget",
+        "gain",
+        "galaxy",
+        "gallery",
+        "game",
+        "gap",
+        "garage",
+        "garbage",
+        "garden",
+        "garlic",
+        "garment",
+        "gas",
+        "gasp",
+        "gate",
+        "gather",
+        "gauge",
+        "gaze",
+        "general",
+        "genius",
+        "genre",
+        "gentle",
+        "genuine",
+        "gesture",
+        "ghost",
+        "giant",
+        "gift",
+        "giggle",
+        "ginger",
+        "giraffe",
+        "girl",
+        "give",
+        "glad",
+        "glance",
+        "glare",
+        "glass",
+        "glide",
+        "glimpse",
+        "globe",
+        "gloom",
+        "glory",
+        "glove",
+        "glow",
+        "glue",
+        "goat",
+        "goddess",
+        "gold",
+        "good",
+        "goose",
+        "gorilla",
+        "gospel",
+        "gossip",
+        "govern",
+        "gown",
+        "grab",
+        "grace",
+        "grain",
+        "grant",
+        "grape",
+        "grass",
+        "gravity",
+        "great",
+        "green",
+        "grid",
+        "grief",
+        "grit",
+        "grocery",
+        "group",
+        "grow",
+        "grunt",
+        "guard",
+        "guess",
+        "guide",
+        "guilt",
+        "guitar",
+        "gun",
+        "gym",
+        "habit",
+        "hair",
+        "half",
+        "hammer",
+        "hamster",
+        "hand",
+        "happy",
+        "harbor",
+        "hard",
+        "harsh",
+        "harvest",
+        "hat",
+        "have",
+        "hawk",
+        "hazard",
+        "head",
+        "health",
+        "heart",
+        "heavy",
+        "hedgehog",
+        "height",
+        "hello",
+        "helmet",
+        "help",
+        "hen",
+        "hero",
+        "hidden",
+        "high",
+        "hill",
+        "hint",
+        "hip",
+        "hire",
+        "history",
+        "hobby",
+        "hockey",
+        "hold",
+        "hole",
+        "holiday",
+        "hollow",
+        "home",
+        "honey",
+        "hood",
+        "hope",
+        "horn",
+        "horror",
+        "horse",
+        "hospital",
+        "host",
+        "hotel",
+        "hour",
+        "hover",
+        "hub",
+        "huge",
+        "human",
+        "humble",
+        "humor",
+        "hundred",
+        "hungry",
+        "hunt",
+        "hurdle",
+        "hurry",
+        "hurt",
+        "husband",
+        "hybrid",
+        "ice",
+        "icon",
+        "idea",
+        "identify",
+        "idle",
+        "ignore",
+        "ill",
+        "illegal",
+        "illness",
+        "image",
+        "imitate",
+        "immense",
+        "immune",
+        "impact",
+        "impose",
+        "improve",
+        "impulse",
+        "inch",
+        "include",
+        "income",
+        "increase",
+        "index",
+        "indicate",
+        "indoor",
+        "industry",
+        "infant",
+        "inflict",
+        "inform",
+        "inhale",
+        "inherit",
+        "initial",
+        "inject",
+        "injury",
+        "inmate",
+        "inner",
+        "innocent",
+        "input",
+        "inquiry",
+        "insane",
+        "insect",
+        "inside",
+        "inspire",
+        "install",
+        "intact",
+        "interest",
+        "into",
+        "invest",
+        "invite",
+        "involve",
+        "iron",
+        "island",
+        "isolate",
+        "issue",
+        "item",
+        "ivory",
+        "jacket",
+        "jaguar",
+        "jar",
+        "jazz",
+        "jealous",
+        "jeans",
+        "jelly",
+        "jewel",
+        "job",
+        "join",
+        "joke",
+        "journey",
+        "joy",
+        "judge",
+        "juice",
+        "jump",
+        "jungle",
+        "junior",
+        "junk",
+        "just",
+        "kangaroo",
+        "keen",
+        "keep",
+        "ketchup",
+        "key",
+        "kick",
+        "kid",
+        "kidney",
+        "kind",
+        "kingdom",
+        "kiss",
+        "kit",
+        "kitchen",
+        "kite",
+        "kitten",
+        "kiwi",
+        "knee",
+        "knife",
+        "knock",
+        "know",
+        "lab",
+        "label",
+        "labor",
+        "ladder",
+        "lady",
+        "lake",
+        "lamp",
+        "language",
+        "laptop",
+        "large",
+        "later",
+        "latin",
+        "laugh",
+        "laundry",
+        "lava",
+        "law",
+        "lawn",
+        "lawsuit",
+        "layer",
+        "lazy",
+        "leader",
+        "leaf",
+        "learn",
+        "leave",
+        "lecture",
+        "left",
+        "leg",
+        "legal",
+        "legend",
+        "leisure",
+        "lemon",
+        "lend",
+        "length",
+        "lens",
+        "leopard",
+        "lesson",
+        "letter",
+        "level",
+        "liar",
+        "liberty",
+        "library",
+        "license",
+        "life",
+        "lift",
+        "light",
+        "like",
+        "limb",
+        "limit",
+        "link",
+        "lion",
+        "liquid",
+        "list",
+        "little",
+        "live",
+        "lizard",
+        "load",
+        "loan",
+        "lobster",
+        "local",
+        "lock",
+        "logic",
+        "lonely",
+        "long",
+        "loop",
+        "lottery",
+        "loud",
+        "lounge",
+        "love",
+        "loyal",
+        "lucky",
+        "luggage",
+        "lumber",
+        "lunar",
+        "lunch",
+        "luxury",
+        "lyrics",
+        "machine",
+        "mad",
+        "magic",
+        "magnet",
+        "maid",
+        "mail",
+        "main",
+        "major",
+        "make",
+        "mammal",
+        "man",
+        "manage",
+        "mandate",
+        "mango",
+        "mansion",
+        "manual",
+        "maple",
+        "marble",
+        "march",
+        "margin",
+        "marine",
+        "market",
+        "marriage",
+        "mask",
+        "mass",
+        "master",
+        "match",
+        "material",
+        "math",
+        "matrix",
+        "matter",
+        "maximum",
+        "maze",
+        "meadow",
+        "mean",
+        "measure",
+        "meat",
+        "mechanic",
+        "medal",
+        "media",
+        "melody",
+        "melt",
+        "member",
+        "memory",
+        "mention",
+        "menu",
+        "mercy",
+        "merge",
+        "merit",
+        "merry",
+        "mesh",
+        "message",
+        "metal",
+        "method",
+        "middle",
+        "midnight",
+        "milk",
+        "million",
+        "mimic",
+        "mind",
+        "minimum",
+        "minor",
+        "minute",
+        "miracle",
+        "mirror",
+        "misery",
+        "miss",
+        "mistake",
+        "mix",
+        "mixed",
+        "mixture",
+        "mobile",
+        "model",
+        "modify",
+        "mom",
+        "moment",
+        "monitor",
+        "monkey",
+        "monster",
+        "month",
+        "moon",
+        "moral",
+        "more",
+        "morning",
+        "mosquito",
+        "mother",
+        "motion",
+        "motor",
+        "mountain",
+        "mouse",
+        "move",
+        "movie",
+        "much",
+        "muffin",
+        "mule",
+        "multiply",
+        "muscle",
+        "museum",
+        "mushroom",
+        "music",
+        "must",
+        "mutual",
+        "myself",
+        "mystery",
+        "myth",
+        "naive",
+        "name",
+        "napkin",
+        "narrow",
+        "nasty",
+        "nation",
+        "nature",
+        "near",
+        "neck",
+        "need",
+        "negative",
+        "neglect",
+        "neither",
+        "nephew",
+        "nerve",
+        "nest",
+        "net",
+        "network",
+        "neutral",
+        "never",
+        "news",
+        "next",
+        "nice",
+        "night",
+        "noble",
+        "noise",
+        "nominee",
+        "noodle",
+        "normal",
+        "north",
+        "nose",
+        "notable",
+        "note",
+        "nothing",
+        "notice",
+        "novel",
+        "now",
+        "nuclear",
+        "number",
+        "nurse",
+        "nut",
+        "oak",
+        "obey",
+        "object",
+        "oblige",
+        "obscure",
+        "observe",
+        "obtain",
+        "obvious",
+        "occur",
+        "ocean",
+        "october",
+        "odor",
+        "off",
+        "offer",
+        "office",
+        "often",
+        "oil",
+        "okay",
+        "old",
+        "olive",
+        "olympic",
+        "omit",
+        "once",
+        "one",
+        "onion",
+        "online",
+        "only",
+        "open",
+        "opera",
+        "opinion",
+        "oppose",
+        "option",
+        "orange",
+        "orbit",
+        "orchard",
+        "order",
+        "ordinary",
+        "organ",
+        "orient",
+        "original",
+        "orphan",
+        "ostrich",
+        "other",
+        "outdoor",
+        "outer",
+        "output",
+        "outside",
+        "oval",
+        "oven",
+        "over",
+        "own",
+        "owner",
+        "oxygen",
+        "oyster",
+        "ozone",
+        "pact",
+        "paddle",
+        "page",
+        "pair",
+        "palace",
+        "palm",
+        "panda",
+        "panel",
+        "panic",
+        "panther",
+        "paper",
+        "parade",
+        "parent",
+        "park",
+        "parrot",
+        "party",
+        "pass",
+        "patch",
+        "path",
+        "patient",
+        "patrol",
+        "pattern",
+        "pause",
+        "pave",
+        "payment",
+        "peace",
+        "peanut",
+        "pear",
+        "peasant",
+        "pelican",
+        "pen",
+        "penalty",
+        "pencil",
+        "people",
+        "pepper",
+        "perfect",
+        "permit",
+        "person",
+        "pet",
+        "phone",
+        "photo",
+        "phrase",
+        "physical",
+        "piano",
+        "picnic",
+        "picture",
+        "piece",
+        "pig",
+        "pigeon",
+        "pill",
+        "pilot",
+        "pink",
+        "pioneer",
+        "pipe",
+        "pistol",
+        "pitch",
+        "pizza",
+        "place",
+        "planet",
+        "plastic",
+        "plate",
+        "play",
+        "please",
+        "pledge",
+        "pluck",
+        "plug",
+        "plunge",
+        "poem",
+        "poet",
+        "point",
+        "polar",
+        "pole",
+        "police",
+        "pond",
+        "pony",
+        "pool",
+        "popular",
+        "portion",
+        "position",
+        "possible",
+        "post",
+        "potato",
+        "pottery",
+        "poverty",
+        "powder",
+        "power",
+        "practice",
+        "praise",
+        "predict",
+        "prefer",
+        "prepare",
+        "present",
+        "pretty",
+        "prevent",
+        "price",
+        "pride",
+        "primary",
+        "print",
+        "priority",
+        "prison",
+        "private",
+        "prize",
+        "problem",
+        "process",
+        "produce",
+        "profit",
+        "program",
+        "project",
+        "promote",
+        "proof",
+        "property",
+        "prosper",
+        "protect",
+        "proud",
+        "provide",
+        "public",
+        "pudding",
+        "pull",
+        "pulp",
+        "pulse",
+        "pumpkin",
+        "punch",
+        "pupil",
+        "puppy",
+        "purchase",
+        "purity",
+        "purpose",
+        "purse",
+        "push",
+        "put",
+        "puzzle",
+        "pyramid",
+        "quality",
+        "quantum",
+        "quarter",
+        "question",
+        "quick",
+        "quit",
+        "quiz",
+        "quote",
+        "rabbit",
+        "raccoon",
+        "race",
+        "rack",
+        "radar",
+        "radio",
+        "rail",
+        "rain",
+        "raise",
+        "rally",
+        "ramp",
+        "ranch",
+        "random",
+        "range",
+        "rapid",
+        "rare",
+        "rate",
+        "rather",
+        "raven",
+        "raw",
+        "razor",
+        "ready",
+        "real",
+        "reason",
+        "rebel",
+        "rebuild",
+        "recall",
+        "receive",
+        "recipe",
+        "record",
+        "recycle",
+        "reduce",
+        "reflect",
+        "reform",
+        "refuse",
+        "region",
+        "regret",
+        "regular",
+        "reject",
+        "relax",
+        "release",
+        "relief",
+        "rely",
+        "remain",
+        "remember",
+        "remind",
+        "remove",
+        "render",
+        "renew",
+        "rent",
+        "reopen",
+        "repair",
+        "repeat",
+        "replace",
+        "report",
+        "require",
+        "rescue",
+        "resemble",
+        "resist",
+        "resource",
+        "response",
+        "result",
+        "retire",
+        "retreat",
+        "return",
+        "reunion",
+        "reveal",
+        "review",
+        "reward",
+        "rhythm",
+        "rib",
+        "ribbon",
+        "rice",
+        "rich",
+        "ride",
+        "ridge",
+        "rifle",
+        "right",
+        "rigid",
+        "ring",
+        "riot",
+        "ripple",
+        "risk",
+        "ritual",
+        "rival",
+        "river",
+        "road",
+        "roast",
+        "robot",
+        "robust",
+        "rocket",
+        "romance",
+        "roof",
+        "rookie",
+        "room",
+        "rose",
+        "rotate",
+        "rough",
+        "round",
+        "route",
+        "royal",
+        "rubber",
+        "rude",
+        "rug",
+        "rule",
+        "run",
+        "runway",
+        "rural",
+        "sad",
+        "saddle",
+        "sadness",
+        "safe",
+        "sail",
+        "salad",
+        "salmon",
+        "salon",
+        "salt",
+        "salute",
+        "same",
+        "sample",
+        "sand",
+        "satisfy",
+        "satoshi",
+        "sauce",
+        "sausage",
+        "save",
+        "say",
+        "scale",
+        "scan",
+        "scare",
+        "scatter",
+        "scene",
+        "scheme",
+        "school",
+        "science",
+        "scissors",
+        "scorpion",
+        "scout",
+        "scrap",
+        "screen",
+        "script",
+        "scrub",
+        "sea",
+        "search",
+        "season",
+        "seat",
+        "second",
+        "secret",
+        "section",
+        "security",
+        "seed",
+        "seek",
+        "segment",
+        "select",
+        "sell",
+        "seminar",
+        "senior",
+        "sense",
+        "sentence",
+        "series",
+        "service",
+        "session",
+        "settle",
+        "setup",
+        "seven",
+        "shadow",
+        "shaft",
+        "shallow",
+        "share",
+        "shed",
+        "shell",
+        "sheriff",
+        "shield",
+        "shift",
+        "shine",
+        "ship",
+        "shiver",
+        "shock",
+        "shoe",
+        "shoot",
+        "shop",
+        "short",
+        "shoulder",
+        "shove",
+        "shrimp",
+        "shrug",
+        "shuffle",
+        "shy",
+        "sibling",
+        "sick",
+        "side",
+        "siege",
+        "sight",
+        "sign",
+        "silent",
+        "silk",
+        "silly",
+        "silver",
+        "similar",
+        "simple",
+        "since",
+        "sing",
+        "siren",
+        "sister",
+        "situate",
+        "six",
+        "size",
+        "skate",
+        "sketch",
+        "ski",
+        "skill",
+        "skin",
+        "skirt",
+        "skull",
+        "slab",
+        "slam",
+        "sleep",
+        "slender",
+        "slice",
+        "slide",
+        "slight",
+        "slim",
+        "slogan",
+        "slot",
+        "slow",
+        "slush",
+        "small",
+        "smart",
+        "smile",
+        "smoke",
+        "smooth",
+        "snack",
+        "snake",
+        "snap",
+        "sniff",
+        "snow",
+        "soap",
+        "soccer",
+        "social",
+        "sock",
+        "soda",
+        "soft",
+        "solar",
+        "soldier",
+        "solid",
+        "solution",
+        "solve",
+        "someone",
+        "song",
+        "soon",
+        "sorry",
+        "sort",
+        "soul",
+        "sound",
+        "soup",
+        "source",
+        "south",
+        "space",
+        "spare",
+        "spatial",
+        "spawn",
+        "speak",
+        "special",
+        "speed",
+        "spell",
+        "spend",
+        "sphere",
+        "spice",
+        "spider",
+        "spike",
+        "spin",
+        "spirit",
+        "split",
+        "spoil",
+        "sponsor",
+        "spoon",
+        "sport",
+        "spot",
+        "spray",
+        "spread",
+        "spring",
+        "spy",
+        "square",
+        "squeeze",
+        "squirrel",
+        "stable",
+        "stadium",
+        "staff",
+        "stage",
+        "stairs",
+        "stamp",
+        "stand",
+        "start",
+        "state",
+        "stay",
+        "steak",
+        "steel",
+        "stem",
+        "step",
+        "stereo",
+        "stick",
+        "still",
+        "sting",
+        "stock",
+        "stomach",
+        "stone",
+        "stool",
+        "story",
+        "stove",
+        "strategy",
+        "street",
+        "strike",
+        "strong",
+        "struggle",
+        "student",
+        "stuff",
+        "stumble",
+        "style",
+        "subject",
+        "submit",
+        "subway",
+        "success",
+        "such",
+        "sudden",
+        "suffer",
+        "sugar",
+        "suggest",
+        "suit",
+        "summer",
+        "sun",
+        "sunny",
+        "sunset",
+        "super",
+        "supply",
+        "supreme",
+        "sure",
+        "surface",
+        "surge",
+        "surprise",
+        "surround",
+        "survey",
+        "suspect",
+        "sustain",
+        "swallow",
+        "swamp",
+        "swap",
+        "swarm",
+        "swear",
+        "sweet",
+        "swift",
+        "swim",
+        "swing",
+        "switch",
+        "sword",
+        "symbol",
+        "symptom",
+        "syrup",
+        "system",
+        "table",
+        "tackle",
+        "tag",
+        "tail",
+        "talent",
+        "talk",
+        "tank",
+        "tape",
+        "target",
+        "task",
+        "taste",
+        "tattoo",
+        "taxi",
+        "teach",
+        "team",
+        "tell",
+        "ten",
+        "tenant",
+        "tennis",
+        "tent",
+        "term",
+        "test",
+        "text",
+        "thank",
+        "that",
+        "theme",
+        "then",
+        "theory",
+        "there",
+        "they",
+        "thing",
+        "this",
+        "thought",
+        "three",
+        "thrive",
+        "throw",
+        "thumb",
+        "thunder",
+        "ticket",
+        "tide",
+        "tiger",
+        "tilt",
+        "timber",
+        "time",
+        "tiny",
+        "tip",
+        "tired",
+        "tissue",
+        "title",
+        "toast",
+        "tobacco",
+        "today",
+        "toddler",
+        "toe",
+        "together",
+        "toilet",
+        "token",
+        "tomato",
+        "tomorrow",
+        "tone",
+        "tongue",
+        "tonight",
+        "tool",
+        "tooth",
+        "top",
+        "topic",
+        "topple",
+        "torch",
+        "tornado",
+        "tortoise",
+        "toss",
+        "total",
+        "tourist",
+        "toward",
+        "tower",
+        "town",
+        "toy",
+        "track",
+        "trade",
+        "traffic",
+        "tragic",
+        "train",
+        "transfer",
+        "trap",
+        "trash",
+        "travel",
+        "tray",
+        "treat",
+        "tree",
+        "trend",
+        "trial",
+        "tribe",
+        "trick",
+        "trigger",
+        "trim",
+        "trip",
+        "trophy",
+        "trouble",
+        "truck",
+        "true",
+        "truly",
+        "trumpet",
+        "trust",
+        "truth",
+        "try",
+        "tube",
+        "tuition",
+        "tumble",
+        "tuna",
+        "tunnel",
+        "turkey",
+        "turn",
+        "turtle",
+        "twelve",
+        "twenty",
+        "twice",
+        "twin",
+        "twist",
+        "two",
+        "type",
+        "typical",
+        "ugly",
+        "umbrella",
+        "unable",
+        "unaware",
+        "uncle",
+        "uncover",
+        "under",
+        "undo",
+        "unfair",
+        "unfold",
+        "unhappy",
+        "uniform",
+        "unique",
+        "unit",
+        "universe",
+        "unknown",
+        "unlock",
+        "until",
+        "unusual",
+        "unveil",
+        "update",
+        "upgrade",
+        "uphold",
+        "upon",
+        "upper",
+        "upset",
+        "urban",
+        "urge",
+        "usage",
+        "use",
+        "used",
+        "useful",
+        "useless",
+        "usual",
+        "utility",
+        "vacant",
+        "vacuum",
+        "vague",
+        "valid",
+        "valley",
+        "valve",
+        "van",
+        "vanish",
+        "vapor",
+        "various",
+        "vast",
+        "vault",
+        "vehicle",
+        "velvet",
+        "vendor",
+        "venture",
+        "venue",
+        "verb",
+        "verify",
+        "version",
+        "very",
+        "vessel",
+        "veteran",
+        "viable",
+        "vibrant",
+        "vicious",
+        "victory",
+        "video",
+        "view",
+        "village",
+        "vintage",
+        "violin",
+        "virtual",
+        "virus",
+        "visa",
+        "visit",
+        "visual",
+        "vital",
+        "vivid",
+        "vocal",
+        "voice",
+        "void",
+        "volcano",
+        "volume",
+        "vote",
+        "voyage",
+        "wage",
+        "wagon",
+        "wait",
+        "walk",
+        "wall",
+        "walnut",
+        "want",
+        "warfare",
+        "warm",
+        "warrior",
+        "wash",
+        "wasp",
+        "waste",
+        "water",
+        "wave",
+        "way",
+        "wealth",
+        "weapon",
+        "wear",
+        "weasel",
+        "weather",
+        "web",
+        "wedding",
+        "weekend",
+        "weird",
+        "welcome",
+        "west",
+        "wet",
+        "whale",
+        "what",
+        "wheat",
+        "wheel",
+        "when",
+        "where",
+        "whip",
+        "whisper",
+        "wide",
+        "width",
+        "wife",
+        "wild",
+        "will",
+        "win",
+        "window",
+        "wine",
+        "wing",
+        "wink",
+        "winner",
+        "winter",
+        "wire",
+        "wisdom",
+        "wise",
+        "wish",
+        "witness",
+        "wolf",
+        "woman",
+        "wonder",
+        "wood",
+        "wool",
+        "word",
+        "work",
+        "world",
+        "worry",
+        "worth",
+        "wrap",
+        "wreck",
+        "wrestle",
+        "wrist",
+        "write",
+        "wrong",
+        "yard",
+        "year",
+        "yellow",
+        "you",
+        "young",
+        "youth",
+        "zebra",
+        "zero",
+        "zone",
+        "zoo",
+      ];
+
+      const state = {
+        slots: new Array(23).fill(null),
+        slot24: null,
+        dragWord: null,
+      };
+
+      function indexToBits(idx) {
+        return idx.toString(2).padStart(11, "0");
+      }
+
+      function bitsToBytes(bitStr) {
+        const bytes = [];
+        for (let i = 0; i < bitStr.length; i += 8) {
+          bytes.push(parseInt(bitStr.slice(i, i + 8), 2));
+        }
+        return new Uint8Array(bytes);
+      }
+
+      async function sha256(bytes) {
+        const buf = await crypto.subtle.digest("SHA-256", bytes);
+        return new Uint8Array(buf);
+      }
+
+      async function computeCandidates() {
+        const bits253 = state.slots
+          .map((s) => (s ? s.bits : "00000000000"))
+          .join("");
+
+        const candidates = [];
+        for (let b = 0; b < 8; b++) {
+          const suffix3 = b.toString(2).padStart(3, "0");
+          const full256bits = bits253 + suffix3;
+          const entropy = bitsToBytes(full256bits);
+
+          const hashBuf = await sha256(entropy);
+          const checksumByte = hashBuf[0];
+          const checksumBits = checksumByte.toString(2).padStart(8, "0");
+
+          const word24bits = suffix3 + checksumBits;
+          const word24idx = parseInt(word24bits, 2);
+
+          if (word24idx < WORDLIST.length) {
+            candidates.push({
+              suffix3,
+              checksumBits,
+              bits: word24bits,
+              index: word24idx,
+              word: WORDLIST[word24idx],
+            });
+          }
+        }
+        return candidates;
+      }
+
+      function renderPool() {
+        const pool = document.getElementById("wordPool");
+        const q = document
+          .getElementById("searchInput")
+          .value.toLowerCase()
+          .trim();
+        const count = document.getElementById("resultCount");
+
+        const usageCount = {};
+        state.slots.filter(Boolean).forEach((s) => {
+          usageCount[s.index] = (usageCount[s.index] || 0) + 1;
+        });
+
+        const filtered = WORDLIST.reduce((acc, word, i) => {
+          const matchText =
+            q === "" ||
+            word.startsWith(q) ||
+            (q.startsWith("#") && String(i + 1).startsWith(q.slice(1)));
+          if (matchText) acc.push({ word, index: i });
+          return acc;
+        }, []);
+
+        count.innerHTML = `<span>${filtered.length}</span> word${filtered.length !== 1 ? "s" : ""}`;
+
+        pool.innerHTML = "";
+        filtered.slice(0, 120).forEach(({ word, index }) => {
+          const uses = usageCount[index] || 0;
+          const chip = document.createElement("div");
+          chip.className = "word-chip";
+          chip.draggable = true;
+          chip.dataset.wordIndex = index;
+          chip.innerHTML = `
+      <span class="chip-idx">#${index + 1}</span>
+      <strong>${word}</strong>
+      ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
+      <span class="chip-bits">${indexToBits(index)}</span>
+    `;
+          chip.addEventListener("dragstart", onChipDragStart);
+          pool.appendChild(chip);
+        });
+
+        if (filtered.length > 120) {
+          const note = document.createElement("div");
+          note.className = "result-count";
+          note.style.width = "100%";
+          note.style.padding = "8px 4px";
+          note.innerHTML = `+${filtered.length - 120} more - narrow your search`;
+          pool.appendChild(note);
+        }
+      }
+
+      function renderSlots() {
+        const grid = document.getElementById("slotsGrid");
+        grid.innerHTML = "";
+        for (let i = 0; i < 23; i++) {
+          const slot = document.createElement("div");
+          const s = state.slots[i];
+          slot.className = "slot" + (s ? " filled" : "");
+          slot.dataset.slotIndex = i;
+          slot.innerHTML = `<div class="slot-num">${i + 1}</div>`;
+
+          if (s) {
+            slot.innerHTML += `
+        <div class="slot-word">${s.word}</div>
+        <div class="slot-bits">${s.bits}</div>
+        <div class="slot-remove" data-slot="${i}">✕</div>
+      `;
+          } else {
+            slot.innerHTML += `<div class="slot-empty-hint">drop</div>`;
+          }
+
+          slot.addEventListener("dragover", onSlotDragOver);
+          slot.addEventListener("dragleave", onSlotDragLeave);
+          slot.addEventListener("drop", onSlotDrop);
+          grid.appendChild(slot);
+        }
+
+        document.querySelectorAll(".slot-remove").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.dataset.slot);
+            state.slots[idx] = null;
+            state.slot24 = null;
+            update();
+          });
+        });
+      }
+
+      function renderSlot24() {
+        const slot = document.getElementById("slot24");
+        const s = state.slot24;
+        slot.className = "slot slot-24" + (s ? " filled" : "");
+        slot.innerHTML = `<div class="slot-num">24</div>`;
+        if (s) {
+          slot.innerHTML += `
+      <div class="slot-word" style="color:var(--accent2)">${s.word}</div>
+      <div class="slot-bits">${s.bits}</div>
+    `;
+        } else {
+          slot.innerHTML += `<div class="slot-empty-hint">awaiting...</div>`;
+        }
+      }
+
+      function renderBitStrip() {
+        const strip = document.getElementById("bitStrip");
+        strip.innerHTML = "";
+
+        for (let i = 0; i < 23; i++) {
+          const s = state.slots[i];
+          const bits = s ? s.bits : "00000000000";
+          const filled = !!s;
+
+          for (let b = 0; b < 11; b++) {
+            const bit = document.createElement("div");
+            const val = bits[b];
+            bit.className =
+              "bit" + (filled ? (val === "1" ? " b1" : " b0") : "");
+            bit.textContent = filled ? val : "";
+            strip.appendChild(bit);
+          }
+
+          if (i < 22) {
+            const sep = document.createElement("div");
+            sep.className = "bit-group-sep";
+            strip.appendChild(sep);
+          }
+        }
+      }
+
+      async function renderCandidates() {
+        const row = document.getElementById("candidatesRow");
+        const filled = state.slots.filter(Boolean).length;
+
+        if (filled < 23) {
+          row.innerHTML = `<div class="empty-state"><span class="big">·</span>Fill all 23 slots to reveal checksum candidates</div>`;
+          return;
+        }
+
+        const candidates = await computeCandidates();
+        row.innerHTML = "";
+        candidates.forEach((c) => {
+          const chip = document.createElement("div");
+          const isSelected = state.slot24 && state.slot24.index === c.index;
+          chip.className =
+            "candidate-chip active" + (isSelected ? " selected" : "");
+          chip.innerHTML = `<span class="candidate-idx">#${c.index + 1}</span><strong>${c.word}</strong>`;
+          chip.dataset.tip = `bits: ${c.bits}`;
+          chip.addEventListener("click", () => {
+            state.slot24 = c;
+            update();
+          });
+          row.appendChild(chip);
+        });
+      }
+
+      function renderProgress() {
+        const filled = state.slots.filter(Boolean).length;
+        document.getElementById("filledCount").textContent = filled;
+        document.getElementById("progressFill").style.width =
+          `${(filled / 23) * 100}%`;
+      }
+
+      function renderOutput() {
+        const section = document.getElementById("outputSection");
+        if (!state.slot24) {
+          section.classList.remove("visible");
+          return;
+        }
+        section.classList.add("visible");
+
+        const all24 = [...state.slots, state.slot24];
+        const out = document.getElementById("seedOutput");
+        out.innerHTML = all24
+          .map(
+            (s, i) =>
+              `<span class="seed-word"><span class="sw-num">${i + 1}.</span><span class="sw-word">${s ? s.word : "???"}</span></span>`,
+          )
+          .join(" ");
+      }
+
+      async function update() {
+        renderPool();
+        renderSlots();
+        renderSlot24();
+        renderBitStrip();
+        renderProgress();
+        await renderCandidates();
+        renderOutput();
+      }
+
+      function onChipDragStart(e) {
+        const idx = parseInt(e.currentTarget.dataset.wordIndex);
+        state.dragWord = {
+          word: WORDLIST[idx],
+          index: idx,
+          bits: indexToBits(idx),
+        };
+        e.currentTarget.classList.add("dragging");
+        setTimeout(() => e.currentTarget.classList.remove("dragging"), 0);
+      }
+
+      function onSlotDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add("drag-over");
+      }
+
+      function onSlotDragLeave(e) {
+        e.currentTarget.classList.remove("drag-over");
+      }
+
+      function onSlotDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove("drag-over");
+        if (!state.dragWord) return;
+        const slotIdx = parseInt(e.currentTarget.dataset.slotIndex);
+
+        state.slots[slotIdx] = { ...state.dragWord };
+        state.slot24 = null;
+        state.dragWord = null;
+        update();
+      }
+
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", renderPool);
+
+      document.getElementById("copyBtn").addEventListener("click", () => {
+        const all24 = [...state.slots, state.slot24];
+        const text = all24.map((s) => (s ? s.word : "")).join(" ");
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.getElementById("copyBtn");
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy Seed"), 1500);
+        });
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        state.slots = new Array(23).fill(null);
+        state.slot24 = null;
+        update();
+      });
+
+      if (WORDLIST.length > 0) {
+        update();
+      } else {
+        document.getElementById("wordPool").innerHTML = `
+    <div class="empty-state" style="width:100%;padding:40px 20px">
+      <div>Paste your WORDLIST array<br>into the script section</div>
+    </div>
+  `;
+        document.getElementById("slotsGrid").innerHTML = "";
+        renderSlots();
+      }
+    </script>
+  </body>
+</html>
