@@ -20,6 +20,11 @@
         --slot-border-empty: #1e3040;
         --slot-border-filled: #00ff8844;
         --danger: #ff3b5c;
+
+        --cat-noun: #00c4ff;
+        --cat-verb: #ff6b35;
+        --cat-adj: #b084ff;
+        --cat-other: #ffd060;
       }
 
       * {
@@ -62,11 +67,12 @@
       .header {
         position: relative;
         z-index: 10;
-        padding: 28px 40px 20px;
+        padding: 20px 32px;
         border-bottom: 1px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: space-between;
+        background: var(--surface);
       }
 
       .logo {
@@ -74,21 +80,18 @@
         align-items: baseline;
         gap: 12px;
       }
-
       .logo-name {
         font-family: sans-serif;
         font-weight: 800;
-        font-size: 26px;
+        font-size: 24px;
         color: #fff;
         letter-spacing: -0.5px;
       }
-
       .logo-name span {
         color: var(--accent);
       }
-
       .logo-tag {
-        font-size: 10px;
+        font-size: 9px;
         color: var(--muted);
         letter-spacing: 2px;
         text-transform: uppercase;
@@ -98,16 +101,15 @@
       }
 
       .status-dot {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: var(--accent);
-        box-shadow: 0 0 12px var(--accent);
+        box-shadow: 0 0 10px var(--accent);
         animation: pulse 2s infinite;
         display: inline-block;
-        margin-right: 8px;
+        margin-right: 7px;
       }
-
       @keyframes pulse {
         0%,
         100% {
@@ -117,7 +119,6 @@
           opacity: 0.4;
         }
       }
-
       .offline-badge {
         font-size: 10px;
         color: var(--accent);
@@ -128,8 +129,8 @@
         position: relative;
         z-index: 1;
         display: grid;
-        grid-template-columns: 320px 1fr;
-        height: calc(100vh - 73px);
+        grid-template-columns: 300px 1fr;
+        height: calc(100vh - 65px);
         overflow: hidden;
       }
 
@@ -138,14 +139,13 @@
         display: flex;
         flex-direction: column;
         overflow: hidden;
-      }
-
-      .panel-header {
-        padding: 16px 20px;
-        border-bottom: 1px solid var(--border);
         background: var(--surface);
       }
 
+      .panel-header {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+      }
       .panel-label {
         font-size: 9px;
         letter-spacing: 3px;
@@ -158,7 +158,6 @@
       .search-wrap {
         position: relative;
       }
-
       .search-input {
         width: 100%;
         background: var(--bg);
@@ -166,53 +165,170 @@
         color: var(--accent);
         font-family: monospace;
         font-size: 13px;
-        padding: 9px 12px 9px 34px;
+        padding: 8px 10px 8px 30px;
         border-radius: 4px;
         outline: none;
         transition: border-color 0.2s;
       }
-
       .search-input:focus {
         border-color: var(--accent);
       }
       .search-input::placeholder {
         color: var(--muted);
       }
-
       .search-icon {
         position: absolute;
-        left: 10px;
+        left: 9px;
         top: 50%;
         transform: translateY(-50%);
         color: var(--muted);
-        font-size: 12px;
+        font-size: 11px;
       }
-
       .result-count {
         font-size: 10px;
         color: var(--muted);
-        margin-top: 8px;
+        margin-top: 6px;
       }
-
       .result-count span {
         color: var(--accent);
+      }
+
+      .cat-tabs {
+        display: flex;
+        gap: 4px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+      .cat-tab {
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: monospace;
+        padding: 3px 9px;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .cat-tab:hover {
+        opacity: 0.85;
+      }
+      .cat-tab.active {
+        font-weight: 700;
+      }
+
+      .cat-tab[data-cat="all"].active {
+        border-color: var(--text);
+        color: var(--text);
+        background: #ffffff0d;
+      }
+
+      .cat-tab[data-cat="noun"].active {
+        border-color: var(--cat-noun);
+        color: var(--cat-noun);
+        background: #00c4ff12;
+      }
+
+      .cat-tab[data-cat="verb"].active {
+        border-color: var(--cat-verb);
+        color: var(--cat-verb);
+        background: #ff6b3512;
+      }
+
+      .cat-tab[data-cat="adj"].active {
+        border-color: var(--cat-adj);
+        color: var(--cat-adj);
+        background: #b084ff12;
+      }
+
+      .cat-tab[data-cat="adverb"].active {
+        border-color: #ff9ff3;
+        color: #ff9ff3;
+        background: #ff9ff320;
+      }
+
+      .cat-tab[data-cat="specials"].active {
+        border-color: #ffd060;
+        color: #ffd060;
+        background: #ffd06020;
+      }
+
+      .cat-tab[data-cat="determiner"].active {
+        border-color: #a8e6cf;
+        color: #a8e6cf;
+        background: #a8e6cf20;
+      }
+
+      .cat-tab[data-cat="preposition"].active {
+        border-color: #ffccbc;
+        color: #ffccbc;
+        background: #ffccbc20;
+      }
+
+      .cat-tab[data-cat="number"].active {
+        border-color: #d1c4e9;
+        color: #d1c4e9;
+        background: #d1c4e920;
+      }
+
+      .cat-tab[data-cat="plural"].active {
+        border-color: #81d4fa;
+        color: #81d4fa;
+        background: #81d4fa20;
+      }
+
+      .cat-tab[data-cat="verbpast"].active {
+        border-color: #ff8a65;
+        color: #ff8a65;
+        background: #ff8a6520;
+      }
+
+      .cat-tab[data-cat="verbpresent"].active {
+        border-color: #ffeb3b;
+        color: #ffeb3b;
+        background: #ffeb3b20;
+      }
+
+      .cat-tab[data-cat="other"].active {
+        border-color: var(--cat-other);
+        color: var(--cat-other);
+        background: #ffd06012;
+      }
+
+      .cat-tab {
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: monospace;
+        padding: 3px 9px;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        transition: all 0.15s;
+        user-select: none;
+      }
+
+      .cat-tab:hover {
+        opacity: 0.85;
+        border-color: var(--accent);
       }
 
       .word-pool {
         flex: 1;
         overflow-y: auto;
-        padding: 12px;
+        padding: 10px;
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: 5px;
         align-content: flex-start;
       }
-
       .word-pool::-webkit-scrollbar {
-        width: 4px;
-      }
-      .word-pool::-webkit-scrollbar-track {
-        background: transparent;
+        width: 3px;
       }
       .word-pool::-webkit-scrollbar-thumb {
         background: var(--border);
@@ -222,24 +338,21 @@
       .word-chip {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 5px 10px;
+        gap: 5px;
+        padding: 4px 9px;
         background: var(--surface2);
         border: 1px solid var(--border);
         border-radius: 4px;
         cursor: grab;
-        font-size: 12px;
+        font-size: 11px;
         font-family: monospace;
         color: var(--text);
         transition: all 0.15s;
         user-select: none;
-        position: relative;
       }
-
       .word-chip:active {
         cursor: grabbing;
       }
-
       .word-chip:hover {
         border-color: var(--accent);
         color: var(--accent);
@@ -247,35 +360,98 @@
         transform: translateY(-1px);
       }
 
+      .chip-cat {
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 1px 5px;
+        border-radius: 2px;
+        line-height: 1;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .chip-cat.noun {
+        color: var(--cat-noun);
+        background: #00c4ff18;
+        border: 1px solid #00c4ff30;
+      }
+      .chip-cat.verb {
+        color: var(--cat-verb);
+        background: #ff6b3518;
+        border: 1px solid #ff6b3530;
+      }
+      .chip-cat.adj {
+        color: var(--cat-adj);
+        background: #b084ff18;
+        border: 1px solid #b084ff30;
+      }
+      .chip-cat.adverb {
+        color: #ff9ff3;
+        background: #ff9ff320;
+        border-color: #ff9ff340;
+      }
+
+      .chip-cat.specials {
+        color: #ffd060;
+        background: #ffd06020;
+        border-color: #ffd06040;
+      }
+
+      .chip-cat.determiner {
+        color: #a8e6cf;
+        background: #a8e6cf20;
+        border-color: #a8e6cf40;
+      }
+
+      .chip-cat.preposition {
+        color: #ffccbc;
+        background: #ffccbc20;
+        border-color: #ffccbc40;
+      }
+
+      .chip-cat.number {
+        color: #d1c4e9;
+        background: #d1c4e920;
+        border-color: #d1c4e940;
+      }
+
+      .chip-cat.plural {
+        color: #81d4fa;
+        background: #81d4fa20;
+        border-color: #81d4fa40;
+      }
+
+      .chip-cat.verbpast {
+        color: #ff8a65;
+        background: #ff8a6520;
+        border-color: #ff8a6540;
+      }
+
+      .chip-cat.verbpresent {
+        color: #ffeb3b;
+        background: #ffeb3b20;
+        border-color: #ffeb3b40;
+      }
+
+      .chip-cat.other {
+        color: var(--cat-other);
+        background: #ffd06020;
+        border-color: #ffd06040;
+      }
+
+      .chip-idx {
+        font-size: 8px;
+        color: var(--muted);
+      }
       .chip-use-count {
-        font-size: 9px;
+        font-size: 8px;
         font-weight: 700;
         color: var(--accent3);
         background: #ff6b3520;
         border: 1px solid #ff6b3540;
         border-radius: 3px;
-        padding: 1px 4px;
+        padding: 1px 3px;
         line-height: 1;
-      }
-
-      .word-chip.used {
-        opacity: 0.2;
-        pointer-events: none;
-      }
-
-      .chip-idx {
-        font-size: 9px;
-        color: var(--muted);
-      }
-
-      .chip-bits {
-        font-size: 8px;
-        color: #2a4a5a;
-        letter-spacing: 0.5px;
-      }
-
-      .word-chip:hover .chip-bits {
-        color: #3a6a4a;
       }
 
       .builder-panel {
@@ -284,17 +460,76 @@
         overflow: hidden;
       }
 
+      .rhythm-bar {
+        padding: 8px 20px;
+        border-bottom: 1px solid var(--border);
+        background: #0a1118;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .rhythm-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .rhythm-label {
+        font-size: 8px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        text-transform: uppercase;
+        white-space: nowrap;
+        margin-right: 4px;
+        flex-shrink: 0;
+      }
+      .rhythm-token {
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 2px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        opacity: 0.5;
+      }
+      .rhythm-token.noun {
+        color: var(--cat-noun);
+        background: #00c4ff10;
+        border: 1px solid #00c4ff20;
+      }
+      .rhythm-token.verb {
+        color: var(--cat-verb);
+        background: #ff6b3510;
+        border: 1px solid #ff6b3520;
+      }
+      .rhythm-token.adj {
+        color: var(--cat-adj);
+        background: #b084ff10;
+        border: 1px solid #b084ff20;
+      }
+      .rhythm-token.other {
+        color: var(--cat-other);
+        background: #ffd06010;
+        border: 1px solid #ffd06020;
+      }
+      .rhythm-token.active {
+        opacity: 1;
+        box-shadow: 0 0 8px currentColor;
+      }
+      .rhythm-sep {
+        color: var(--muted);
+        font-size: 10px;
+        flex-shrink: 0;
+      }
+
       .slots-wrap {
         flex: 1;
         overflow-y: auto;
-        padding: 20px 24px;
+        padding: 16px 20px;
       }
-
       .slots-wrap::-webkit-scrollbar {
-        width: 4px;
-      }
-      .slots-wrap::-webkit-scrollbar-track {
-        background: transparent;
+        width: 3px;
       }
       .slots-wrap::-webkit-scrollbar-thumb {
         background: var(--border);
@@ -304,12 +539,12 @@
       .slots-grid {
         display: grid;
         grid-template-columns: repeat(6, 1fr);
-        gap: 8px;
-        margin-bottom: 20px;
+        gap: 7px;
+        margin-bottom: 16px;
       }
 
       .slot {
-        min-height: 72px;
+        min-height: 70px;
         border: 1px dashed var(--slot-border-empty);
         border-radius: 6px;
         background: var(--slot-empty);
@@ -321,225 +556,315 @@
         transition: all 0.15s;
         cursor: default;
       }
-
       .slot.drag-over {
         border-color: var(--accent);
         background: #00ff8808;
-        box-shadow: 0 0 20px #00ff8812;
+        box-shadow: 0 0 18px #00ff8812;
       }
-
       .slot.filled {
         border: 1px solid var(--slot-border-filled);
         background: var(--slot-filled);
       }
-
       .slot.slot-24 {
         border-style: solid;
         border-color: var(--accent2);
         background: #00c4ff06;
       }
+      .slot.typing {
+        border-color: var(--accent);
+        background: #00ff8808;
+      }
 
       .slot-num {
         position: absolute;
-        top: 5px;
-        left: 8px;
-        font-size: 9px;
+        top: 4px;
+        left: 7px;
+        font-size: 8px;
         color: var(--muted);
       }
-
       .slot.slot-24 .slot-num {
         color: var(--accent2);
+      }
+
+      .slot-cat-dot {
+        position: absolute;
+        top: 4px;
+        right: 7px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+      .slot-cat-dot.noun {
+        background: var(--cat-noun);
+      }
+      .slot-cat-dot.verb {
+        background: var(--cat-verb);
+      }
+      .slot-cat-dot.adj {
+        background: var(--cat-adj);
+      }
+      .slot-cat-dot.other {
+        background: var(--cat-other);
       }
 
       .slot-word {
         font-family: sans-serif;
         font-weight: 700;
-        font-size: 13px;
+        font-size: 12px;
         color: var(--accent);
         letter-spacing: 0.3px;
       }
-
       .slot-bits {
-        font-size: 8px;
+        font-size: 7px;
         color: var(--muted);
         margin-top: 2px;
         letter-spacing: 0.5px;
       }
-
       .slot-empty-hint {
-        font-size: 9px;
+        font-size: 8px;
         color: #1a2e3a;
         letter-spacing: 1px;
         text-transform: uppercase;
       }
-
       .slot-remove {
         position: absolute;
         top: 4px;
         right: 6px;
-        font-size: 11px;
+        font-size: 10px;
         color: var(--muted);
         cursor: pointer;
         opacity: 0;
         transition: opacity 0.15s;
         line-height: 1;
       }
-
       .slot.filled:hover .slot-remove {
         opacity: 1;
         color: var(--danger);
       }
 
+      .slot-input-wrap {
+        position: relative;
+        width: 100%;
+        padding: 0 6px;
+      }
+      .slot-inline-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--accent);
+        color: var(--accent);
+        font-family: monospace;
+        font-size: 12px;
+        text-align: center;
+        outline: none;
+        padding: 2px 0;
+      }
+      .slot-inline-input::placeholder {
+        color: var(--muted);
+        font-size: 10px;
+      }
+
+      .ac-dropdown {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;
+        background: #0d1f2a;
+        border: 1px solid var(--accent);
+        border-radius: 5px;
+        z-index: 999;
+        max-height: 180px;
+        overflow-y: auto;
+        box-shadow: 0 8px 24px #000a;
+      }
+      .ac-dropdown::-webkit-scrollbar {
+        width: 3px;
+      }
+      .ac-dropdown::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+
+      .ac-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 11px;
+        font-family: monospace;
+        color: var(--text);
+        border-bottom: 1px solid #1a2a35;
+        transition: background 0.1s;
+      }
+      .ac-item:last-child {
+        border-bottom: none;
+      }
+      .ac-item:hover,
+      .ac-item.ac-selected {
+        background: #00ff8812;
+        color: var(--accent);
+      }
+      .ac-item-word {
+        font-weight: 700;
+      }
+      .ac-item-idx {
+        font-size: 8px;
+        color: var(--muted);
+      }
+      .ac-item-cat {
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 1px 4px;
+        border-radius: 2px;
+        line-height: 1;
+        margin-left: auto;
+      }
+      .ac-item-cat.noun {
+        color: var(--cat-noun);
+        background: #00c4ff18;
+      }
+      .ac-item-cat.verb {
+        color: var(--cat-verb);
+        background: #ff6b3518;
+      }
+      .ac-item-cat.adj {
+        color: var(--cat-adj);
+        background: #b084ff18;
+      }
+      .ac-item-cat.other {
+        color: var(--cat-other);
+        background: #ffd06018;
+      }
+
       .candidate-section {
-        padding: 16px 24px;
+        padding: 12px 20px;
         border-top: 1px solid var(--border);
         background: var(--surface);
       }
-
       .candidate-label {
         font-size: 9px;
         letter-spacing: 3px;
         color: var(--muted);
         text-transform: uppercase;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         display: flex;
         align-items: center;
         gap: 8px;
         user-select: none;
       }
-
       .candidate-label::after {
         content: "";
         flex: 1;
         height: 1px;
         background: var(--border);
       }
-
       .candidates-row {
         display: flex;
-        gap: 8px;
+        gap: 7px;
         flex-wrap: wrap;
       }
 
       .candidate-chip {
-        padding: 7px 14px;
+        padding: 6px 12px;
         border: 1px solid var(--border);
         border-radius: 4px;
         background: var(--surface2);
         font-family: monospace;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--muted);
         cursor: not-allowed;
         transition: all 0.2s;
       }
-
       .candidate-chip.active {
         cursor: pointer;
         color: var(--accent2);
         border-color: var(--accent2);
         background: #00c4ff08;
       }
-
       .candidate-chip.active:hover {
         background: #00c4ff14;
-        box-shadow: 0 0 16px #00c4ff20;
+        box-shadow: 0 0 14px #00c4ff20;
       }
-
       .candidate-chip.selected {
         background: var(--accent2);
         color: #000;
         font-weight: 700;
         border-color: var(--accent2);
       }
-
       .candidate-idx {
-        font-size: 9px;
-        margin-right: 4px;
+        font-size: 8px;
+        margin-right: 3px;
         opacity: 0.6;
       }
 
       .bit-strip-section {
-        padding: 12px 24px;
+        padding: 10px 20px;
         border-top: 1px solid var(--border);
         background: var(--bg);
       }
-
       .bit-strip-label {
         font-size: 9px;
         letter-spacing: 3px;
         color: var(--muted);
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 7px;
         user-select: none;
       }
-
       .bit-strip {
         display: flex;
         gap: 1px;
         flex-wrap: wrap;
       }
-
       .bit {
-        width: 8px;
-        height: 14px;
+        width: 7px;
+        height: 12px;
         border-radius: 1px;
         background: #0d1820;
         border: 1px solid #1a2a35;
         transition: all 0.1s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 6px;
-        color: transparent;
       }
-
       .bit.b1 {
         background: var(--accent);
         border-color: var(--accent);
-        color: #000;
-        font-weight: 700;
         box-shadow: 0 0 4px var(--accent);
       }
-
       .bit.b0 {
         background: #0a1e14;
         border-color: #1a3a24;
-        color: #2a6a40;
       }
-
-      .bit.checksum {
-        background: #003355;
-        border-color: var(--accent2);
-      }
-
       .bit.b1.checksum {
         background: var(--accent2);
         border-color: var(--accent2);
         box-shadow: 0 0 4px var(--accent2);
       }
-
+      .bit.checksum {
+        background: #003355;
+        border-color: var(--accent2);
+      }
       .bit-group-sep {
-        width: 3px;
+        width: 2px;
         flex-shrink: 0;
       }
 
       .progress-section {
-        padding: 10px 24px;
+        padding: 8px 20px;
         border-top: 1px solid var(--border);
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 14px;
         background: var(--surface);
+        flex-shrink: 0;
       }
-
       .progress-bar-wrap {
         flex: 1;
-        height: 3px;
+        height: 2px;
         background: var(--border);
         border-radius: 2px;
         overflow: hidden;
       }
-
       .progress-bar-fill {
         height: 100%;
         background: linear-gradient(90deg, var(--accent), var(--accent2));
@@ -547,74 +872,59 @@
         transition: width 0.3s ease;
         width: 0%;
       }
-
       .progress-text {
         font-size: 10px;
         color: var(--muted);
         white-space: nowrap;
       }
-
       .progress-text span {
         color: var(--accent);
       }
 
       .output-section {
-        padding: 14px 24px;
+        padding: 12px 20px;
         border-top: 1px solid var(--border);
         background: var(--surface2);
         display: none;
       }
-
       .output-section.visible {
         display: block;
       }
-
       .output-label {
         font-size: 9px;
         letter-spacing: 3px;
         color: var(--accent);
         text-transform: uppercase;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
-
       .seed-phrase {
         font-family: monospace;
-        font-size: 12px;
+        font-size: 11px;
         color: var(--text);
-        line-height: 1.8;
+        line-height: 1.9;
         letter-spacing: 0.3px;
       }
-
       .seed-word {
         display: inline-block;
         margin-right: 4px;
       }
-
       .seed-word .sw-num {
-        font-size: 9px;
+        font-size: 8px;
         color: var(--muted);
         margin-right: 2px;
       }
-
       .seed-word .sw-word {
         color: var(--accent);
       }
-
-      .seed-word:nth-child(12n)::after {
-        content: "\A";
-        white-space: pre;
-      }
-
       .output-actions {
-        margin-top: 10px;
+        margin-top: 8px;
         display: flex;
-        gap: 8px;
+        gap: 7px;
       }
-
       .btn {
-        padding: 7px 16px;
+        padding: 6px 14px;
         font-family: monospace;
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 1px;
         border-radius: 3px;
         cursor: pointer;
@@ -622,24 +932,20 @@
         transition: all 0.15s;
         text-transform: uppercase;
       }
-
       .btn-copy {
         background: transparent;
         border-color: var(--border);
         color: var(--muted);
       }
-
       .btn-copy:hover {
         border-color: var(--accent);
         color: var(--accent);
       }
-
       .btn-reset {
         background: transparent;
         border-color: var(--border);
         color: var(--muted);
       }
-
       .btn-reset:hover {
         border-color: var(--danger);
         color: var(--danger);
@@ -649,43 +955,17 @@
         opacity: 0.4;
         transform: scale(0.95);
       }
-
       .empty-state {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 24px;
+        padding: 20px;
         color: var(--muted);
-        font-size: 11px;
+        font-size: 10px;
         letter-spacing: 1px;
         text-align: center;
-        gap: 8px;
-      }
-
-      .empty-state .big {
-        font-size: 28px;
-      }
-
-      [data-tip] {
-        position: relative;
-      }
-
-      [data-tip]:hover::after {
-        content: attr(data-tip);
-        position: absolute;
-        bottom: calc(100% + 6px);
-        left: 50%;
-        transform: translateX(-50%);
-        background: #1a2a35;
-        border: 1px solid var(--border);
-        color: var(--text);
-        font-size: 10px;
-        padding: 4px 8px;
-        border-radius: 3px;
-        white-space: nowrap;
-        pointer-events: none;
-        z-index: 100;
+        gap: 6px;
       }
     </style>
   </head>
@@ -700,12 +980,10 @@
       </div>
     </header>
 
-    <!-- I AM WORKING ON 199IQ PROJECT ( I AM WILLING TO IMPLEMENT SUPER CREATIVE IDEAS ) -->
-
     <div class="main">
       <div class="pool-panel">
         <div class="panel-header">
-          <div class="panel-label">Word Pool of 2048 words</div>
+          <div class="panel-label">Word Pool · 2048 words</div>
           <div class="search-wrap">
             <span class="search-icon">⌕</span>
             <input
@@ -720,19 +998,39 @@
           <div class="result-count" id="resultCount">
             <span>2048</span> words
           </div>
+          <div class="cat-tabs">
+            <div class="cat-tab active" data-cat="all">All</div>
+            <div class="cat-tab" data-cat="noun">Noun</div>
+            <div class="cat-tab" data-cat="verb">Verb</div>
+            <div class="cat-tab" data-cat="adj">Adj</div>
+            <div class="cat-tab" data-cat="adverb">Adverbs</div>
+            <div class="cat-tab" data-cat="specials">Specials</div>
+            <div class="cat-tab" data-cat="determiner">Determiners</div>
+            <div class="cat-tab" data-cat="preposition">Prepositions</div>
+            <div class="cat-tab" data-cat="number">Numbers</div>
+            <div class="cat-tab" data-cat="plural">Plurals</div>
+            <div class="cat-tab" data-cat="verbpast">Verb (past)</div>
+            <div class="cat-tab" data-cat="verbpresent">Verb (present)</div>
+
+            <div class="cat-tab" data-cat="other">Other</div>
+          </div>
         </div>
         <div class="word-pool" id="wordPool"></div>
       </div>
 
       <div class="builder-panel">
+        <div class="rhythm-bar" id="rhythmBar">
+          <div class="rhythm-label">story pattern -></div>
+        </div>
+
         <div class="slots-wrap">
           <div class="panel-label" style="margin-bottom: 10px">
-            Drag words into slots ( 23 of 24 )
+            Drag or type words into slots ( 23 of 24 ) - click any slot to type
           </div>
           <div class="slots-grid" id="slotsGrid"></div>
 
-          <div class="panel-label" style="margin-bottom: 10px">
-            Word 24, Checksum-derived (choose one of 8)
+          <div class="panel-label" style="margin-bottom: 10px; margin-top: 4px">
+            Word 24 · Checksum-derived (choose one of 8)
           </div>
           <div id="slot24Wrap">
             <div class="slot slot-24" id="slot24">
@@ -761,7 +1059,7 @@
         </div>
 
         <div class="bit-strip-section">
-          <div class="bit-strip-label">253-bit entropy strip - live</div>
+          <div class="bit-strip-label">253-bit entropy strip · live</div>
           <div class="bit-strip" id="bitStrip"></div>
         </div>
 
@@ -2828,58 +3126,2176 @@
         "zoo",
       ];
 
-      const state = {
-        slots: new Array(23).fill(null),
-        slot24: null,
-        dragWord: null,
-      };
+      const CAT_NOUNS = new Set([
+        "ability",
+        "abuse",
+        "access",
+        "accident",
+        "account",
+        "action",
+        "actor",
+        "actress",
+        "addict",
+        "adult",
+        "advance",
+        "advice",
+        "affair",
+        "age",
+        "agent",
+        "aim",
+        "air",
+        "airport",
+        "aisle",
+        "alarm",
+        "album",
+        "alcohol",
+        "alley",
+        "alpha",
+        "amount",
+        "analyst",
+        "anchor",
+        "anger",
+        "angle",
+        "animal",
+        "ankle",
+        "antenna",
+        "antique",
+        "anxiety",
+        "apology",
+        "apple",
+        "arch",
+        "area",
+        "arena",
+        "arm",
+        "armor",
+        "army",
+        "arrow",
+        "art",
+        "artefact",
+        "artist",
+        "artwork",
+        "aspect",
+        "assault",
+        "asset",
+        "asthma",
+        "athlete",
+        "atom",
+        "attack",
+        "attitude",
+        "auction",
+        "audit",
+        "aunt",
+        "author",
+        "auto",
+        "autumn",
+        "average",
+        "avocado",
+        "axis",
+        "baby",
+        "bachelor",
+        "bacon",
+        "badge",
+        "bag",
+        "balance",
+        "balcony",
+        "ball",
+        "bamboo",
+        "banana",
+        "banner",
+        "bar",
+        "bargain",
+        "barrel",
+        "base",
+        "basket",
+        "battle",
+        "beach",
+        "bean",
+        "beauty",
+        "belt",
+        "bench",
+        "bicycle",
+        "bid",
+        "bike",
+        "bind",
+        "biology",
+        "bird",
+        "birth",
+        "blade",
+        "blame",
+        "blanket",
+        "blast",
+        "blood",
+        "blossom",
+        "blouse",
+        "blush",
+        "board",
+        "boat",
+        "body",
+        "boil",
+        "bomb",
+        "bone",
+        "bonus",
+        "book",
+        "boost",
+        "border",
+        "boss",
+        "bottom",
+        "bounce",
+        "box",
+        "bracket",
+        "brain",
+        "brand",
+        "brass",
+        "bread",
+        "breeze",
+        "brick",
+        "bridge",
+        "broccoli",
+        "bronze",
+        "broom",
+        "brother",
+        "brush",
+        "bubble",
+        "buddy",
+        "budget",
+        "bulb",
+        "bulk",
+        "bullet",
+        "bundle",
+        "bunker",
+        "burden",
+        "burger",
+        "burst",
+        "bus",
+        "business",
+        "butter",
+        "buyer",
+        "buzz",
+        "cabbage",
+        "cabin",
+        "cable",
+        "cactus",
+        "cage",
+        "cake",
+        "camera",
+        "camp",
+        "canal",
+        "candy",
+        "cannon",
+        "canoe",
+        "canvas",
+        "canyon",
+        "capital",
+        "captain",
+        "car",
+        "carbon",
+        "card",
+        "cargo",
+        "carpet",
+        "cart",
+        "case",
+        "cash",
+        "casino",
+        "castle",
+        "cat",
+        "catalog",
+        "category",
+        "cause",
+        "caution",
+        "cave",
+        "ceiling",
+        "celery",
+        "cement",
+        "census",
+        "century",
+        "cereal",
+        "chair",
+        "chalk",
+        "champion",
+        "change",
+        "chaos",
+        "chapter",
+        "charge",
+        "check",
+        "cheese",
+        "chef",
+        "cherry",
+        "chest",
+        "chicken",
+        "child",
+        "chimney",
+        "choice",
+        "chuckle",
+        "chunk",
+        "cigar",
+        "cinnamon",
+        "circle",
+        "citizen",
+        "city",
+        "claim",
+        "clerk",
+        "click",
+        "client",
+        "cliff",
+        "climb",
+        "clinic",
+        "clip",
+        "clock",
+        "clog",
+        "cloth",
+        "cloud",
+        "clown",
+        "club",
+        "clump",
+        "cluster",
+        "clutch",
+        "coach",
+        "coast",
+        "coconut",
+        "code",
+        "coffee",
+        "coil",
+        "coin",
+        "color",
+        "column",
+        "comfort",
+        "company",
+        "concert",
+        "congress",
+        "copper",
+        "copy",
+        "coral",
+        "core",
+        "corn",
+        "cost",
+        "cotton",
+        "couch",
+        "country",
+        "couple",
+        "course",
+        "cousin",
+        "coyote",
+        "crack",
+        "cradle",
+        "craft",
+        "cram",
+        "crane",
+        "crash",
+        "cream",
+        "credit",
+        "creek",
+        "crew",
+        "cricket",
+        "crime",
+        "critic",
+        "crop",
+        "cross",
+        "crouch",
+        "crowd",
+        "cruise",
+        "crunch",
+        "crush",
+        "cry",
+        "crystal",
+        "cube",
+        "culture",
+        "cup",
+        "cupboard",
+        "curtain",
+        "curve",
+        "cushion",
+        "custom",
+        "cycle",
+        "dad",
+        "damage",
+        "dance",
+        "danger",
+        "dash",
+        "daughter",
+        "dawn",
+        "day",
+        "deal",
+        "debate",
+        "debris",
+        "decade",
+        "deer",
+        "defense",
+        "degree",
+        "demand",
+        "demise",
+        "denial",
+        "dentist",
+        "deposit",
+        "depth",
+        "desert",
+        "design",
+        "desk",
+        "despair",
+        "detail",
+        "device",
+        "diagram",
+        "dial",
+        "diamond",
+        "diary",
+        "diesel",
+        "diet",
+        "dignity",
+        "dilemma",
+        "dinner",
+        "dinosaur",
+        "dirt",
+        "disease",
+        "dish",
+        "disorder",
+        "display",
+        "distance",
+        "divorce",
+        "doctor",
+        "document",
+        "dog",
+        "doll",
+        "dolphin",
+        "domain",
+        "donkey",
+        "donor",
+        "door",
+        "dose",
+        "draft",
+        "dragon",
+        "drama",
+        "duck",
+        "dune",
+        "dust",
+        "dutch",
+        "duty",
+        "dwarf",
+        "eagle",
+        "earth",
+        "ecology",
+        "economy",
+        "edge",
+        "effort",
+        "egg",
+        "elbow",
+        "element",
+        "elephant",
+        "elevator",
+        "elite",
+        "emotion",
+        "enemy",
+        "energy",
+        "engine",
+        "entry",
+        "envelope",
+        "episode",
+        "era",
+        "erosion",
+        "error",
+        "essay",
+        "essence",
+        "estate",
+        "evidence",
+        "evil",
+        "example",
+        "excess",
+        "exchange",
+        "exhibit",
+        "exile",
+        "eye",
+        "eyebrow",
+        "fabric",
+        "face",
+        "faculty",
+        "faith",
+        "fall",
+        "fame",
+        "family",
+        "fan",
+        "fantasy",
+        "farm",
+        "fashion",
+        "father",
+        "fatigue",
+        "fault",
+        "feature",
+        "fee",
+        "fence",
+        "festival",
+        "fever",
+        "fiber",
+        "fiction",
+        "field",
+        "figure",
+        "film",
+        "filter",
+        "fire",
+        "firm",
+        "fish",
+        "fit",
+        "fitness",
+        "fix",
+        "flag",
+        "flame",
+        "flash",
+        "flavor",
+        "flight",
+        "flock",
+        "floor",
+        "flower",
+        "foam",
+        "food",
+        "foot",
+        "force",
+        "forest",
+        "fortune",
+        "forum",
+        "fox",
+        "frame",
+        "friend",
+        "fringe",
+        "frog",
+        "front",
+        "frost",
+        "frown",
+        "fruit",
+        "fuel",
+        "fun",
+        "furnace",
+        "fury",
+        "future",
+        "gadget",
+        "gain",
+        "galaxy",
+        "gallery",
+        "game",
+        "gap",
+        "garage",
+        "garbage",
+        "garden",
+        "garlic",
+        "garment",
+        "gas",
+        "gate",
+        "genius",
+        "genre",
+        "gesture",
+        "ghost",
+        "giant",
+        "gift",
+        "giggle",
+        "ginger",
+        "girl",
+        "glance",
+        "glare",
+        "glass",
+        "glimpse",
+        "globe",
+        "gloom",
+        "glory",
+        "glove",
+        "glow",
+        "glue",
+        "goat",
+        "goddess",
+        "gold",
+        "goose",
+        "gorilla",
+        "gospel",
+        "gossip",
+        "grace",
+        "grain",
+        "grant",
+        "grape",
+        "grass",
+        "gravity",
+        "grid",
+        "grief",
+        "grit",
+        "grocery",
+        "group",
+        "guilt",
+        "guitar",
+        "gun",
+        "gym",
+        "habit",
+        "hair",
+        "half",
+        "hammer",
+        "hamster",
+        "hand",
+        "harbor",
+        "harvest",
+        "hat",
+        "hawk",
+        "hazard",
+        "head",
+        "health",
+        "heart",
+        "hedgehog",
+        "height",
+        "hello",
+        "helmet",
+        "help",
+        "hen",
+        "hero",
+        "hill",
+        "hint",
+        "hip",
+        "history",
+        "hobby",
+        "hockey",
+        "hole",
+        "holiday",
+        "home",
+        "honey",
+        "hood",
+        "hope",
+        "horn",
+        "horror",
+        "horse",
+        "hospital",
+        "host",
+        "hotel",
+        "hour",
+        "hover",
+        "hub",
+        "humor",
+        "hunt",
+        "hurdle",
+        "hurry",
+        "husband",
+        "hybrid",
+        "ice",
+        "icon",
+        "idea",
+        "illness",
+        "image",
+        "impact",
+        "impulse",
+        "income",
+        "increase",
+        "index",
+        "industry",
+        "infant",
+        "injury",
+        "inmate",
+        "input",
+        "inquiry",
+        "insect",
+        "interest",
+        "iron",
+        "island",
+        "issue",
+        "item",
+        "ivory",
+        "jacket",
+        "jaguar",
+        "jar",
+        "jazz",
+        "jelly",
+        "jewel",
+        "job",
+        "joke",
+        "journey",
+        "joy",
+        "judge",
+        "juice",
+        "jump",
+        "jungle",
+        "junk",
+        "kick",
+        "kid",
+        "kidney",
+        "kind",
+        "kingdom",
+        "kiss",
+        "kit",
+        "kitchen",
+        "kite",
+        "kitten",
+        "kiwi",
+        "knee",
+        "knife",
+        "laptop",
+        "lab",
+        "label",
+        "labor",
+        "ladder",
+        "lady",
+        "lake",
+        "lamp",
+        "language",
+        "laugh",
+        "laundry",
+        "lava",
+        "law",
+        "lawn",
+        "lawsuit",
+        "layer",
+        "leader",
+        "leaf",
+        "leg",
+        "legend",
+        "leisure",
+        "lemon",
+        "length",
+        "lens",
+        "leopard",
+        "lesson",
+        "letter",
+        "level",
+        "liar",
+        "liberty",
+        "library",
+        "license",
+        "life",
+        "limb",
+        "limit",
+        "link",
+        "lion",
+        "list",
+        "lizard",
+        "load",
+        "loan",
+        "lobster",
+        "lock",
+        "logic",
+        "loop",
+        "lottery",
+        "lounge",
+        "love",
+        "luggage",
+        "lumber",
+        "lunch",
+        "luxury",
+        "machine",
+        "magnet",
+        "maid",
+        "mail",
+        "mammal",
+        "mango",
+        "mansion",
+        "maple",
+        "marble",
+        "margin",
+        "market",
+        "marriage",
+        "mask",
+        "mass",
+        "master",
+        "match",
+        "material",
+        "math",
+        "matrix",
+        "matter",
+        "maximum",
+        "maze",
+        "meadow",
+        "measure",
+        "meat",
+        "mechanic",
+        "medal",
+        "melody",
+        "member",
+        "memory",
+        "mention",
+        "menu",
+        "mercy",
+        "mesh",
+        "message",
+        "metal",
+        "method",
+        "middle",
+        "midnight",
+        "milk",
+        "minute",
+        "miracle",
+        "mirror",
+        "misery",
+        "mistake",
+        "mix",
+        "mixture",
+        "model",
+        "mom",
+        "moment",
+        "monitor",
+        "monkey",
+        "monster",
+        "month",
+        "moon",
+        "morning",
+        "mosquito",
+        "mother",
+        "motion",
+        "motor",
+        "mountain",
+        "mouse",
+        "move",
+        "movie",
+        "muffin",
+        "mule",
+        "muscle",
+        "museum",
+        "mushroom",
+        "music",
+        "mystery",
+        "myth",
+        "name",
+        "napkin",
+        "nation",
+        "nature",
+        "neck",
+        "neglect",
+        "nephew",
+        "nerve",
+        "nest",
+        "network",
+        "news",
+        "night",
+        "noise",
+        "nominee",
+        "noodle",
+        "nose",
+        "note",
+        "notice",
+        "novel",
+        "number",
+        "nurse",
+        "nut",
+        "oak",
+        "ocean",
+        "odor",
+        "offer",
+        "office",
+        "oil",
+        "onion",
+        "opera",
+        "opinion",
+        "option",
+        "orange",
+        "orbit",
+        "orchard",
+        "order",
+        "organ",
+        "orphan",
+        "output",
+        "oven",
+        "owner",
+        "oxygen",
+        "oyster",
+        "ozone",
+        "pact",
+        "paddle",
+        "page",
+        "pair",
+        "palace",
+        "palm",
+        "panda",
+        "panel",
+        "panic",
+        "paper",
+        "parade",
+        "parent",
+        "park",
+        "parrot",
+        "party",
+        "patch",
+        "path",
+        "patient",
+        "patrol",
+        "pattern",
+        "payment",
+        "peace",
+        "peanut",
+        "pear",
+        "peasant",
+        "pelican",
+        "pen",
+        "penalty",
+        "pencil",
+        "pepper",
+        "person",
+        "pet",
+        "phone",
+        "photo",
+        "phrase",
+        "piano",
+        "picnic",
+        "picture",
+        "piece",
+        "pig",
+        "pigeon",
+        "pill",
+        "pilot",
+        "pioneer",
+        "pipe",
+        "pistol",
+        "pitch",
+        "pizza",
+        "place",
+        "planet",
+        "plastic",
+        "plate",
+        "pledge",
+        "plunge",
+        "poem",
+        "poet",
+        "point",
+        "pole",
+        "pond",
+        "pony",
+        "pool",
+        "portion",
+        "position",
+        "post",
+        "potato",
+        "pottery",
+        "poverty",
+        "powder",
+        "power",
+        "practice",
+        "praise",
+        "price",
+        "pride",
+        "print",
+        "priority",
+        "prison",
+        "prize",
+        "problem",
+        "process",
+        "profit",
+        "program",
+        "project",
+        "proof",
+        "property",
+        "pudding",
+        "pulp",
+        "pulse",
+        "pumpkin",
+        "punch",
+        "pupil",
+        "puppy",
+        "purchase",
+        "purity",
+        "purpose",
+        "purse",
+        "quality",
+        "quantum",
+        "quarter",
+        "question",
+        "rabbit",
+        "race",
+        "rack",
+        "radar",
+        "radio",
+        "rail",
+        "rain",
+        "rally",
+        "ramp",
+        "ranch",
+        "range",
+        "rate",
+        "razor",
+        "reason",
+        "rebel",
+        "recipe",
+        "record",
+        "region",
+        "regret",
+        "relief",
+        "resource",
+        "response",
+        "result",
+        "reunion",
+        "rhythm",
+        "rib",
+        "ribbon",
+        "rice",
+        "ring",
+        "riot",
+        "ripple",
+        "risk",
+        "ritual",
+        "rival",
+        "river",
+        "road",
+        "roast",
+        "robot",
+        "rocket",
+        "romance",
+        "roof",
+        "rookie",
+        "room",
+        "round",
+        "route",
+        "royal",
+        "rubber",
+        "rug",
+        "rule",
+        "run",
+        "runway",
+        "saddle",
+        "sadness",
+        "sail",
+        "salad",
+        "salmon",
+        "salon",
+        "salt",
+        "salute",
+        "sample",
+        "sand",
+        "sauce",
+        "sausage",
+        "scene",
+        "scheme",
+        "school",
+        "science",
+        "scissors",
+        "scorpion",
+        "scout",
+        "scrap",
+        "screen",
+        "script",
+        "scrub",
+        "sea",
+        "search",
+        "season",
+        "seat",
+        "section",
+        "security",
+        "seed",
+        "segment",
+        "seminar",
+        "sense",
+        "sentence",
+        "series",
+        "service",
+        "session",
+        "setup",
+        "shadow",
+        "shaft",
+        "share",
+        "shell",
+        "sheriff",
+        "shock",
+        "shoe",
+        "shuffle",
+        "sibling",
+        "side",
+        "siege",
+        "sight",
+        "sign",
+        "silk",
+        "siren",
+        "sister",
+        "size",
+        "skate",
+        "sketch",
+        "ski",
+        "skill",
+        "skin",
+        "skirt",
+        "skull",
+        "slab",
+        "slice",
+        "slide",
+        "slogan",
+        "slot",
+        "slush",
+        "smile",
+        "smoke",
+        "snack",
+        "snake",
+        "snap",
+        "snow",
+        "soap",
+        "soccer",
+        "soda",
+        "soldier",
+        "solution",
+        "song",
+        "sort",
+        "soul",
+        "sound",
+        "soup",
+        "source",
+        "space",
+        "sphere",
+        "spice",
+        "spider",
+        "spirit",
+        "split",
+        "sponsor",
+        "spoon",
+        "sport",
+        "spot",
+        "spray",
+        "spread",
+        "spring",
+        "spy",
+        "squeeze",
+        "stadium",
+        "staff",
+        "stage",
+        "state",
+        "steak",
+        "steel",
+        "sting",
+        "stock",
+        "stomach",
+        "stone",
+        "stool",
+        "story",
+        "stove",
+        "strategy",
+        "street",
+        "strike",
+        "struggle",
+        "student",
+        "stuff",
+        "stumble",
+        "style",
+        "subway",
+        "success",
+        "sugar",
+        "suit",
+        "summer",
+        "sun",
+        "sunset",
+        "supply",
+        "supreme",
+        "surface",
+        "surge",
+        "surprise",
+        "survey",
+        "swarm",
+        "sword",
+        "symbol",
+        "symptom",
+        "syrup",
+        "system",
+        "table",
+        "tag",
+        "tail",
+        "talent",
+        "talk",
+        "tank",
+        "tape",
+        "target",
+        "task",
+        "taste",
+        "tattoo",
+        "taxi",
+        "tenant",
+        "tennis",
+        "tent",
+        "term",
+        "test",
+        "text",
+        "theme",
+        "theory",
+        "thing",
+        "thumb",
+        "thunder",
+        "ticket",
+        "tide",
+        "tiger",
+        "tilt",
+        "timber",
+        "time",
+        "tip",
+        "tissue",
+        "title",
+        "toast",
+        "tobacco",
+        "toddler",
+        "toe",
+        "token",
+        "toilet",
+        "tomato",
+        "tone",
+        "tongue",
+        "tool",
+        "tooth",
+        "topic",
+        "torch",
+        "tornado",
+        "tortoise",
+        "tourist",
+        "tower",
+        "town",
+        "toy",
+        "track",
+        "trade",
+        "traffic",
+        "trap",
+        "trash",
+        "travel",
+        "tray",
+        "tree",
+        "trend",
+        "trial",
+        "tribe",
+        "trip",
+        "trophy",
+        "trouble",
+        "truck",
+        "trumpet",
+        "trust",
+        "truth",
+        "tube",
+        "tuition",
+        "tumble",
+        "tuna",
+        "tunnel",
+        "turkey",
+        "turn",
+        "turtle",
+        "twelve",
+        "twist",
+        "type",
+        "umbrella",
+        "uncle",
+        "unit",
+        "universe",
+        "unknown",
+        "urge",
+        "usage",
+        "use",
+        "utility",
+        "vacuum",
+        "valley",
+        "valve",
+        "vapor",
+        "vault",
+        "vehicle",
+        "velvet",
+        "vendor",
+        "venture",
+        "venue",
+        "verb",
+        "version",
+        "vessel",
+        "victory",
+        "video",
+        "view",
+        "village",
+        "vintage",
+        "violin",
+        "virus",
+        "visa",
+        "visit",
+        "voice",
+        "void",
+        "volcano",
+        "volume",
+        "vote",
+        "voyage",
+        "wage",
+        "wagon",
+        "wall",
+        "walnut",
+        "warfare",
+        "warrior",
+        "wash",
+        "wasp",
+        "waste",
+        "water",
+        "wave",
+        "way",
+        "wealth",
+        "weapon",
+        "wear",
+        "weasel",
+        "weather",
+        "web",
+        "wedding",
+        "weekend",
+        "whale",
+        "wheat",
+        "wheel",
+        "whisper",
+        "width",
+        "wife",
+        "window",
+        "wine",
+        "wing",
+        "wink",
+        "winner",
+        "winter",
+        "wire",
+        "wisdom",
+        "wish",
+        "witness",
+        "wolf",
+        "woman",
+        "wonder",
+        "wood",
+        "wool",
+        "word",
+        "work",
+        "world",
+        "wrist",
+        "yard",
+        "year",
+        "youth",
+        "zone",
+        "zoo",
+      ]);
+      const CAT_VERBS = new Set([
+        "abandon",
+        "absent",
+        "absorb",
+        "accuse",
+        "achieve",
+        "acquire",
+        "act",
+        "adapt",
+        "add",
+        "address",
+        "adjust",
+        "admit",
+        "afford",
+        "allow",
+        "alter",
+        "announce",
+        "answer",
+        "appear",
+        "approve",
+        "arrange",
+        "arrest",
+        "arrive",
+        "ask",
+        "assist",
+        "assume",
+        "attend",
+        "attract",
+        "avoid",
+        "become",
+        "beef",
+        "begin",
+        "behave",
+        "benefit",
+        "betray",
+        "bless",
+        "blur",
+        "borrow",
+        "bring",
+        "buffalo",
+        "build",
+        "call",
+        "calm",
+        "cancel",
+        "carry",
+        "catch",
+        "chase",
+        "chat",
+        "choose",
+        "clap",
+        "clarify",
+        "claw",
+        "clay",
+        "clean",
+        "collect",
+        "combine",
+        "come",
+        "conduct",
+        "confirm",
+        "connect",
+        "consider",
+        "control",
+        "convince",
+        "cook",
+        "cool",
+        "cover",
+        "crater",
+        "crawl",
+        "crumble",
+        "damp",
+        "decide",
+        "decline",
+        "decorate",
+        "decrease",
+        "define",
+        "delay",
+        "deliver",
+        "deny",
+        "depart",
+        "depend",
+        "derive",
+        "describe",
+        "destroy",
+        "detect",
+        "develop",
+        "devote",
+        "dismiss",
+        "donate",
+        "draw",
+        "dream",
+        "dress",
+        "drift",
+        "drill",
+        "drink",
+        "drip",
+        "drive",
+        "drop",
+        "drum",
+        "earn",
+        "edit",
+        "educate",
+        "embark",
+        "embrace",
+        "emerge",
+        "enable",
+        "enact",
+        "end",
+        "endorse",
+        "enforce",
+        "engage",
+        "enhance",
+        "enjoy",
+        "enlist",
+        "ensure",
+        "enter",
+        "equip",
+        "erase",
+        "erode",
+        "erupt",
+        "escape",
+        "evolve",
+        "excite",
+        "exclude",
+        "excuse",
+        "execute",
+        "exercise",
+        "exhaust",
+        "exist",
+        "exit",
+        "expand",
+        "expect",
+        "expire",
+        "explain",
+        "expose",
+        "express",
+        "extend",
+        "fade",
+        "faint",
+        "feed",
+        "feel",
+        "fetch",
+        "file",
+        "find",
+        "fine",
+        "finger",
+        "finish",
+        "flee",
+        "flip",
+        "float",
+        "fly",
+        "focus",
+        "fog",
+        "foil",
+        "fold",
+        "follow",
+        "forget",
+        "fork",
+        "gasp",
+        "gather",
+        "gauge",
+        "give",
+        "glide",
+        "govern",
+        "gown",
+        "grab",
+        "grow",
+        "grunt",
+        "guard",
+        "guess",
+        "guide",
+        "have",
+        "hire",
+        "hold",
+        "identify",
+        "idle",
+        "ignore",
+        "impose",
+        "improve",
+        "inch",
+        "include",
+        "inflict",
+        "inform",
+        "inject",
+        "inspire",
+        "install",
+        "invest",
+        "invite",
+        "involve",
+        "join",
+        "kangaroo",
+        "keen",
+        "keep",
+        "ketchup",
+        "knock",
+        "know",
+        "learn",
+        "leave",
+        "lecture",
+        "lend",
+        "lift",
+        "live",
+        "make",
+        "manage",
+        "mandate",
+        "mean",
+        "melt",
+        "merge",
+        "merit",
+        "mimic",
+        "mind",
+        "miss",
+        "modify",
+        "multiply",
+        "observe",
+        "obtain",
+        "occur",
+        "omit",
+        "pass",
+        "pause",
+        "pave",
+        "permit",
+        "play",
+        "pluck",
+        "plug",
+        "predict",
+        "prefer",
+        "prepare",
+        "present",
+        "prevent",
+        "produce",
+        "promote",
+        "prosper",
+        "protect",
+        "provide",
+        "pull",
+        "push",
+        "put",
+        "puzzle",
+        "pyramid",
+        "quit",
+        "quiz",
+        "quote",
+        "raise",
+        "rebuild",
+        "recall",
+        "receive",
+        "recycle",
+        "reduce",
+        "reflect",
+        "reform",
+        "refuse",
+        "reject",
+        "relax",
+        "release",
+        "rely",
+        "remain",
+        "remember",
+        "remind",
+        "remove",
+        "render",
+        "renew",
+        "rent",
+        "reopen",
+        "repair",
+        "repeat",
+        "replace",
+        "report",
+        "require",
+        "rescue",
+        "resemble",
+        "resist",
+        "retire",
+        "retreat",
+        "return",
+        "reveal",
+        "review",
+        "reward",
+        "ride",
+        "ridge",
+        "rifle",
+        "rotate",
+        "satisfy",
+        "save",
+        "say",
+        "scale",
+        "scan",
+        "scare",
+        "scatter",
+        "seek",
+        "select",
+        "sell",
+        "settle",
+        "shield",
+        "shift",
+        "shine",
+        "ship",
+        "shiver",
+        "shoot",
+        "shop",
+        "shoulder",
+        "shove",
+        "shrimp",
+        "shrug",
+        "sing",
+        "sniff",
+        "sock",
+        "solve",
+        "spawn",
+        "speak",
+        "speed",
+        "spell",
+        "spend",
+        "spike",
+        "spin",
+        "stamp",
+        "stand",
+        "start",
+        "stay",
+        "stem",
+        "step",
+        "stick",
+        "submit",
+        "suffer",
+        "suspect",
+        "sustain",
+        "swallow",
+        "swamp",
+        "swap",
+        "swear",
+        "tackle",
+        "teach",
+        "team",
+        "tell",
+        "thrive",
+        "throw",
+        "topple",
+        "toss",
+        "train",
+        "transfer",
+        "treat",
+        "trick",
+        "trigger",
+        "trim",
+        "try",
+        "uncover",
+        "undo",
+        "unfold",
+        "unveil",
+        "update",
+        "upgrade",
+        "uphold",
+        "verify",
+        "wait",
+        "walk",
+        "whip",
+        "win",
+        "wrap",
+        "wreck",
+        "wrestle",
+        "write",
+      ]);
+      const CAT_ADJ = new Set([
+        "able",
+        "abstract",
+        "absurd",
+        "acid",
+        "acoustic",
+        "actual",
+        "aerobic",
+        "afraid",
+        "alert",
+        "alien",
+        "amateur",
+        "amazing",
+        "amused",
+        "ancient",
+        "angry",
+        "annual",
+        "arctic",
+        "aware",
+        "awesome",
+        "awful",
+        "awkward",
+        "basic",
+        "bitter",
+        "black",
+        "bleak",
+        "blind",
+        "blue",
+        "brave",
+        "brief",
+        "bright",
+        "boring",
+        "brisk",
+        "brown",
+        "busy",
+        "capable",
+        "casual",
+        "certain",
+        "chief",
+        "chronic",
+        "civil",
+        "clever",
+        "comic",
+        "common",
+        "correct",
+        "crazy",
+        "crisp",
+        "crucial",
+        "cruel",
+        "curious",
+        "current",
+        "cute",
+        "daring",
+        "deputy",
+        "digital",
+        "direct",
+        "dizzy",
+        "dry",
+        "dumb",
+        "dynamic",
+        "eager",
+        "electric",
+        "elegant",
+        "empty",
+        "endless",
+        "entire",
+        "equal",
+        "eternal",
+        "exact",
+        "exotic",
+        "extra",
+        "false",
+        "famous",
+        "fancy",
+        "fat",
+        "fatal",
+        "favorite",
+        "federal",
+        "female",
+        "few",
+        "final",
+        "first",
+        "fiscal",
+        "fluid",
+        "flush",
+        "fossil",
+        "foster",
+        "fragile",
+        "frequent",
+        "fresh",
+        "funny",
+        "general",
+        "gentle",
+        "genuine",
+        "glad",
+        "good",
+        "great",
+        "green",
+        "happy",
+        "harsh",
+        "heavy",
+        "hidden",
+        "high",
+        "hollow",
+        "huge",
+        "human",
+        "humble",
+        "hungry",
+        "illegal",
+        "immense",
+        "immune",
+        "indoor",
+        "initial",
+        "inner",
+        "innocent",
+        "insane",
+        "intact",
+        "jealous",
+        "junior",
+        "key",
+        "large",
+        "lazy",
+        "legal",
+        "light",
+        "like",
+        "liquid",
+        "local",
+        "lonely",
+        "loyal",
+        "lucky",
+        "lunar",
+        "mad",
+        "magic",
+        "main",
+        "major",
+        "manual",
+        "marine",
+        "merry",
+        "minimum",
+        "minor",
+        "mixed",
+        "mobile",
+        "moral",
+        "mutual",
+        "naive",
+        "narrow",
+        "nasty",
+        "negative",
+        "net",
+        "neutral",
+        "next",
+        "nice",
+        "noble",
+        "normal",
+        "notable",
+        "nuclear",
+        "obscure",
+        "obvious",
+        "okay",
+        "old",
+        "olive",
+        "olympic",
+        "online",
+        "open",
+        "ordinary",
+        "orient",
+        "original",
+        "other",
+        "outdoor",
+        "outer",
+        "outside",
+        "oval",
+        "own",
+        "perfect",
+        "physical",
+        "pink",
+        "polar",
+        "popular",
+        "possible",
+        "primary",
+        "private",
+        "proud",
+        "public",
+        "quick",
+        "random",
+        "rapid",
+        "rare",
+        "raven",
+        "raw",
+        "ready",
+        "real",
+        "regular",
+        "rich",
+        "rigid",
+        "robust",
+        "rough",
+        "rude",
+        "rural",
+        "sad",
+        "safe",
+        "same",
+        "second",
+        "secret",
+        "senior",
+        "shallow",
+        "shy",
+        "sick",
+        "silent",
+        "silly",
+        "silver",
+        "similar",
+        "simple",
+        "situate",
+        "slender",
+        "slight",
+        "slim",
+        "slow",
+        "small",
+        "smart",
+        "smooth",
+        "social",
+        "soft",
+        "solar",
+        "solid",
+        "spare",
+        "spatial",
+        "special",
+        "stable",
+        "stereo",
+        "strong",
+        "subject",
+        "such",
+        "sudden",
+        "sunny",
+        "super",
+        "sweet",
+        "swift",
+        "tiny",
+        "tired",
+        "top",
+        "total",
+        "tragic",
+        "true",
+        "twin",
+        "typical",
+        "ugly",
+        "unable",
+        "unaware",
+        "unfair",
+        "unhappy",
+        "uniform",
+        "unique",
+        "unusual",
+        "upper",
+        "upset",
+        "urban",
+        "useful",
+        "useless",
+        "usual",
+        "vacant",
+        "vague",
+        "valid",
+        "various",
+        "vast",
+        "veteran",
+        "viable",
+        "vibrant",
+        "vicious",
+        "virtual",
+        "visual",
+        "vital",
+        "vivid",
+        "vocal",
+        "warm",
+        "weird",
+        "welcome",
+        "wet",
+        "wide",
+        "wild",
+        "wise",
+        "worth",
+        "yellow",
+        "young",
+        "elder",
+      ]);
+      const CAT_SPECIALS = new Set([
+        "april",
+        "latin",
+        "satoshi",
+        "van",
+        "boy",
+        "man",
+        "please",
+        "october",
+        "march",
+        "february",
+        "august",
+        "december",
+        "west",
+        "east",
+        "north",
+        "south",
+      ]);
+      const CAT_DETERMINERS = new Set([
+        "another",
+        "when",
+        "where",
+        "myself",
+        "they",
+        "you",
+        "what",
+        "someone",
+        "nothing",
+        "can",
+        "must",
+        "will",
+        "that",
+      ]);
+      const CAT_PREPOSITIONS = new Set([
+        "across",
+        "among",
+        "because",
+        "between",
+        "during",
+        "into",
+        "toward",
+        "under",
+        "until",
+      ]);
+      const CAT_NUMBERS = new Set([
+        "zero",
+        "one",
+        "two",
+        "three",
+        "six",
+        "seven",
+        "eight",
+        "ten",
+        "twenty",
+        "hundred",
+        "million",
+      ]);
+      const CAT_PLURALS = new Set([
+        "cattle",
+        "dice",
+        "ethics",
+        "giraffe",
+        "jeans",
+        "lyrics",
+        "media",
+        "ostrich",
+        "panther",
+        "people",
+        "police",
+        "raccoon",
+        "squirrel",
+        "stairs",
+        "zebra",
+      ]);
+      const CAT_VERBPRESENT = new Set([
+        "agree",
+        "argue",
+        "believe",
+        "churn",
+        "defy",
+        "differ",
+        "disagree",
+        "discover",
+        "divert",
+        "divide",
+        "echo",
+        "embody",
+        "employ",
+        "empower",
+        "enrich",
+        "enroll",
+        "evoke",
+        "gaze",
+        "imitate",
+        "indicate",
+        "inhale",
+        "inherit",
+        "isolate",
+        "need",
+        "obey",
+        "object",
+        "oblige",
+        "oppose",
+        "slam",
+        "sleep",
+        "spoil",
+        "suggest",
+        "surround",
+        "swim",
+        "swing",
+        "switch",
+        "thank",
+        "unlock",
+        "vanish",
+        "want",
+        "worry",
+      ]);
+
+      const CAT_ADVERBS = new Set([
+        "about",
+        "above",
+        "again",
+        "ahead",
+        "all",
+        "almost",
+        "alone",
+        "already",
+        "also",
+        "always",
+        "any",
+        "apart",
+        "around",
+        "awake",
+        "away",
+        "barely",
+        "best",
+        "before",
+        "better",
+        "behind",
+        "below",
+        "beyond",
+        "cheap",
+        "close",
+        "double",
+        "drastic",
+        "early",
+        "easily",
+        "easy",
+        "either",
+        "else",
+        "enough",
+        "flat",
+        "forward",
+        "hard",
+        "ill",
+        "inside",
+        "just",
+        "left",
+        "later",
+        "little",
+        "long",
+        "loud",
+        "much",
+        "more",
+        "near",
+        "neither",
+        "never",
+        "now",
+        "off",
+        "often",
+        "once",
+        "only",
+        "over",
+        "pretty",
+        "rather",
+        "right",
+        "short",
+        "since",
+        "soon",
+        "sorry",
+        "square",
+        "still",
+        "sure",
+        "then",
+        "there",
+        "this",
+        "today",
+        "together",
+        "tomorrow",
+        "tonight",
+        "truly",
+        "twice",
+        "upon",
+        "very",
+        "wrong",
+      ]);
+
+      const CAT_VERBSPAST = new Set([
+        "armed",
+        "broken",
+        "caught",
+        "frozen",
+        "hurt",
+        "used",
+        "dove",
+        "found",
+        "rose",
+        "shed",
+        "thought",
+      ]);
+
+      const total =
+        CAT_NOUNS.size +
+        CAT_VERBS.size +
+        CAT_ADJ.size +
+        CAT_SPECIALS.size +
+        CAT_DETERMINERS.size +
+        CAT_PREPOSITIONS.size +
+        CAT_NUMBERS.size +
+        CAT_PLURALS.size +
+        CAT_VERBPRESENT.size +
+        CAT_ADVERBS.size +
+        CAT_VERBSPAST.size;
+
+      console.log("\ntotal words in all categories:", total);
+      console.log("WORDLIST length:", WORDLIST.length);
+
+      const RHYTHM = [
+        "noun",
+        "verb",
+        "adj",
+        "noun",
+        "verb",
+        "other",
+        "noun",
+        "verb",
+        "adj",
+        "noun",
+        "verb",
+        "other",
+        "noun",
+        "adj",
+        "noun",
+        "verb",
+        "other",
+        "noun",
+        "verb",
+        "adj",
+        "noun",
+        "verb",
+        "adj",
+      ];
+
+      function getCategory(word) {
+        if (CAT_NOUNS.has(word)) return "noun";
+        if (CAT_VERBS.has(word)) return "verb";
+        if (CAT_ADJ.has(word)) return "adj";
+        if (CAT_SPECIALS.has(word)) return "specials";
+        if (CAT_DETERMINERS.has(word)) return "determiner";
+        if (CAT_PREPOSITIONS.has(word)) return "preposition";
+        if (CAT_NUMBERS.has(word)) return "number";
+        if (CAT_VERBPRESENT.has(word)) return "verbpresent";
+        if (CAT_ADVERBS.has(word)) return "adverb";
+        if (CAT_VERBSPAST.has(word)) return "verbpast";
+        if (CAT_PLURALS.has(word)) return "plural";
+        return "other";
+      }
 
       function indexToBits(idx) {
         return idx.toString(2).padStart(11, "0");
       }
-
       function bitsToBytes(bitStr) {
         const bytes = [];
-        for (let i = 0; i < bitStr.length; i += 8) {
+        for (let i = 0; i < bitStr.length; i += 8)
           bytes.push(parseInt(bitStr.slice(i, i + 8), 2));
-        }
         return new Uint8Array(bytes);
       }
-
       async function sha256(bytes) {
         const buf = await crypto.subtle.digest("SHA-256", bytes);
         return new Uint8Array(buf);
       }
 
-      async function computeCandidates() {
-        const bits253 = state.slots
-          .map((s) => (s ? s.bits : "00000000000"))
-          .join("");
+      const state = {
+        slots: new Array(23).fill(null),
+        slot24: null,
+        dragWord: null,
+        catFilter: "all",
+        typingSlot: null,
+      };
 
-        const candidates = [];
-        for (let b = 0; b < 8; b++) {
-          const suffix3 = b.toString(2).padStart(3, "0");
-          const full256bits = bits253 + suffix3;
-          const entropy = bitsToBytes(full256bits);
-
-          const hashBuf = await sha256(entropy);
-          const checksumByte = hashBuf[0];
-          const checksumBits = checksumByte.toString(2).padStart(8, "0");
-
-          const word24bits = suffix3 + checksumBits;
-          const word24idx = parseInt(word24bits, 2);
-
-          if (word24idx < WORDLIST.length) {
-            candidates.push({
-              suffix3,
-              checksumBits,
-              bits: word24bits,
-              index: word24idx,
-              word: WORDLIST[word24idx],
-            });
+      function renderRhythmBar() {
+        const bar = document.getElementById("rhythmBar");
+        const label = bar.querySelector(".rhythm-label");
+        bar.innerHTML = "";
+        bar.appendChild(label);
+        const filledCount = state.slots.filter(Boolean).length;
+        RHYTHM.forEach((cat, i) => {
+          if (i > 0) {
+            const sep = document.createElement("span");
+            sep.className = "rhythm-sep";
+            sep.textContent = "·";
+            bar.appendChild(sep);
           }
-        }
-        return candidates;
+          const tok = document.createElement("div");
+          tok.className = `rhythm-token ${cat}${i === filledCount ? " active" : ""}`;
+          tok.textContent = cat === "other" ? "prep" : cat;
+          bar.appendChild(tok);
+        });
       }
 
       function renderPool() {
@@ -2889,6 +5305,7 @@
           .value.toLowerCase()
           .trim();
         const count = document.getElementById("resultCount");
+        const catF = state.catFilter;
 
         const usageCount = {};
         state.slots.filter(Boolean).forEach((s) => {
@@ -2896,39 +5313,40 @@
         });
 
         const filtered = WORDLIST.reduce((acc, word, i) => {
+          const cat = getCategory(word);
+          const matchCat = catF === "all" || cat === catF;
           const matchText =
             q === "" ||
             word.startsWith(q) ||
             (q.startsWith("#") && String(i + 1).startsWith(q.slice(1)));
-          if (matchText) acc.push({ word, index: i });
+          if (matchCat && matchText) acc.push({ word, index: i, cat });
           return acc;
         }, []);
 
         count.innerHTML = `<span>${filtered.length}</span> word${filtered.length !== 1 ? "s" : ""}`;
-
         pool.innerHTML = "";
-        filtered.slice(0, 120).forEach(({ word, index }) => {
+
+        filtered.slice(0, 100).forEach(({ word, index, cat }) => {
           const uses = usageCount[index] || 0;
           const chip = document.createElement("div");
           chip.className = "word-chip";
           chip.draggable = true;
           chip.dataset.wordIndex = index;
           chip.innerHTML = `
-      <span class="chip-idx">#${index + 1}</span>
-      <strong>${word}</strong>
-      ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
-      <span class="chip-bits">${indexToBits(index)}</span>
-    `;
+            <span class="chip-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
+            <span class="chip-idx">#${index + 1}</span>
+            <strong>${word}</strong>
+            ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
+          `;
           chip.addEventListener("dragstart", onChipDragStart);
           pool.appendChild(chip);
         });
 
-        if (filtered.length > 120) {
+        if (filtered.length > 100) {
           const note = document.createElement("div");
-          note.className = "result-count";
-          note.style.width = "100%";
-          note.style.padding = "8px 4px";
-          note.innerHTML = `+${filtered.length - 120} more - narrow your search`;
+          note.style.cssText =
+            "width:100%;padding:6px 4px;font-size:10px;color:#4a6070;";
+          note.textContent = `+${filtered.length - 100} more - narrow search`;
           pool.appendChild(note);
         }
       }
@@ -2936,21 +5354,137 @@
       function renderSlots() {
         const grid = document.getElementById("slotsGrid");
         grid.innerHTML = "";
+
         for (let i = 0; i < 23; i++) {
           const slot = document.createElement("div");
           const s = state.slots[i];
-          slot.className = "slot" + (s ? " filled" : "");
+          const isTyping = state.typingSlot === i;
+          slot.className =
+            "slot" + (s ? " filled" : "") + (isTyping ? " typing" : "");
           slot.dataset.slotIndex = i;
           slot.innerHTML = `<div class="slot-num">${i + 1}</div>`;
 
-          if (s) {
+          if (isTyping) {
+            const wrap = document.createElement("div");
+            wrap.className = "slot-input-wrap";
+            wrap.style.position = "relative";
+
+            const inp = document.createElement("input");
+            inp.className = "slot-inline-input";
+            inp.placeholder = "type...";
+            inp.autocomplete = "off";
+            inp.spellcheck = false;
+            if (s) inp.value = s.word;
+
+            const dd = document.createElement("div");
+            dd.className = "ac-dropdown";
+            dd.style.display = "none";
+
+            let acIdx = -1;
+            let acItems = [];
+
+            const buildDropdown = (q) => {
+              dd.innerHTML = "";
+              acItems = [];
+              acIdx = -1;
+              if (!q) {
+                dd.style.display = "none";
+                return;
+              }
+              const matches = WORDLIST.reduce((acc, word, wi) => {
+                if (word.startsWith(q.toLowerCase()))
+                  acc.push({ word, index: wi });
+                return acc;
+              }, []).slice(0, 12);
+              if (!matches.length) {
+                dd.style.display = "none";
+                return;
+              }
+              matches.forEach(({ word, index }, mi) => {
+                const cat = getCategory(word);
+                const item = document.createElement("div");
+                item.className = "ac-item";
+                item.dataset.mi = mi;
+                item.innerHTML = `
+                  <span class="ac-item-idx">#${index + 1}</span>
+                  <span class="ac-item-word">${word}</span>
+                  <span class="ac-item-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
+                `;
+                item.addEventListener("mousedown", (e) => {
+                  e.preventDefault();
+                  placeWord(i, { word, index, bits: indexToBits(index) });
+                });
+                dd.appendChild(item);
+                acItems.push({ word, index });
+              });
+              dd.style.display = "block";
+            };
+
+            inp.addEventListener("input", () => buildDropdown(inp.value));
+            inp.addEventListener("keydown", (e) => {
+              const items = dd.querySelectorAll(".ac-item");
+              if (e.key === "ArrowDown") {
+                e.preventDefault();
+                acIdx = Math.min(acIdx + 1, items.length - 1);
+                items.forEach((el, mi) =>
+                  el.classList.toggle("ac-selected", mi === acIdx),
+                );
+              } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                acIdx = Math.max(acIdx - 1, 0);
+                items.forEach((el, mi) =>
+                  el.classList.toggle("ac-selected", mi === acIdx),
+                );
+              } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (acIdx >= 0 && acItems[acIdx]) {
+                  const { word, index } = acItems[acIdx];
+                  placeWord(i, { word, index, bits: indexToBits(index) });
+                } else if (acItems.length === 1) {
+                  const { word, index } = acItems[0];
+                  placeWord(i, { word, index, bits: indexToBits(index) });
+                }
+              } else if (e.key === "Escape") {
+                state.typingSlot = null;
+                update();
+              }
+            });
+            inp.addEventListener("blur", () => {
+              setTimeout(() => {
+                if (state.typingSlot === i) {
+                  state.typingSlot = null;
+                  update();
+                }
+              }, 200);
+            });
+
+            wrap.appendChild(inp);
+            wrap.appendChild(dd);
+            slot.appendChild(wrap);
+
+            setTimeout(() => {
+              inp.focus();
+              if (s) buildDropdown(s.word);
+            }, 0);
+          } else if (s) {
+            const cat = getCategory(s.word);
             slot.innerHTML += `
-        <div class="slot-word">${s.word}</div>
-        <div class="slot-bits">${s.bits}</div>
-        <div class="slot-remove" data-slot="${i}">✕</div>
-      `;
+              <div class="slot-cat-dot ${cat}"></div>
+              <div class="slot-word">${s.word}</div>
+              <div class="slot-bits">${s.bits}</div>
+              <div class="slot-remove" data-slot="${i}">✕</div>
+            `;
+            slot.addEventListener("click", (e) => {
+              if (e.target.classList.contains("slot-remove")) return;
+              state.typingSlot = i;
+              update();
+            });
           } else {
-            slot.innerHTML += `<div class="slot-empty-hint">drop</div>`;
+            slot.innerHTML += `<div class="slot-empty-hint">drop / type</div>`;
+            slot.addEventListener("click", () => {
+              state.typingSlot = i;
+              update();
+            });
           }
 
           slot.addEventListener("dragover", onSlotDragOver);
@@ -2965,9 +5499,18 @@
             const idx = parseInt(btn.dataset.slot);
             state.slots[idx] = null;
             state.slot24 = null;
+            state.typingSlot = null;
             update();
           });
         });
+      }
+
+      function placeWord(slotIdx, wordObj) {
+        state.slots[slotIdx] = { ...wordObj };
+        state.slot24 = null;
+        state.typingSlot = null;
+        document.getElementById("searchInput").value = "";
+        update();
       }
 
       function renderSlot24() {
@@ -2976,10 +5519,12 @@
         slot.className = "slot slot-24" + (s ? " filled" : "");
         slot.innerHTML = `<div class="slot-num">24</div>`;
         if (s) {
+          const cat = getCategory(s.word);
           slot.innerHTML += `
-      <div class="slot-word" style="color:var(--accent2)">${s.word}</div>
-      <div class="slot-bits">${s.bits}</div>
-    `;
+            <div class="slot-cat-dot ${cat}" style="right:7px;top:4px;position:absolute;"></div>
+            <div class="slot-word" style="color:var(--accent2)">${s.word}</div>
+            <div class="slot-bits">${s.bits}</div>
+          `;
         } else {
           slot.innerHTML += `<div class="slot-empty-hint">awaiting...</div>`;
         }
@@ -2988,21 +5533,16 @@
       function renderBitStrip() {
         const strip = document.getElementById("bitStrip");
         strip.innerHTML = "";
-
         for (let i = 0; i < 23; i++) {
           const s = state.slots[i];
           const bits = s ? s.bits : "00000000000";
           const filled = !!s;
-
           for (let b = 0; b < 11; b++) {
             const bit = document.createElement("div");
-            const val = bits[b];
             bit.className =
-              "bit" + (filled ? (val === "1" ? " b1" : " b0") : "");
-            bit.textContent = filled ? val : "";
+              "bit" + (filled ? (bits[b] === "1" ? " b1" : " b0") : "");
             strip.appendChild(bit);
           }
-
           if (i < 22) {
             const sep = document.createElement("div");
             sep.className = "bit-group-sep";
@@ -3011,15 +5551,38 @@
         }
       }
 
+      async function computeCandidates() {
+        const bits253 = state.slots
+          .map((s) => (s ? s.bits : "00000000000"))
+          .join("");
+        const candidates = [];
+        for (let b = 0; b < 8; b++) {
+          const suffix3 = b.toString(2).padStart(3, "0");
+          const full256bits = bits253 + suffix3;
+          const entropy = bitsToBytes(full256bits);
+          const hashBuf = await sha256(entropy);
+          const checksumBits = hashBuf[0].toString(2).padStart(8, "0");
+          const word24bits = suffix3 + checksumBits;
+          const word24idx = parseInt(word24bits, 2);
+          if (word24idx < WORDLIST.length) {
+            candidates.push({
+              suffix3,
+              checksumBits,
+              bits: word24bits,
+              index: word24idx,
+              word: WORDLIST[word24idx],
+            });
+          }
+        }
+        return candidates;
+      }
+
       async function renderCandidates() {
         const row = document.getElementById("candidatesRow");
-        const filled = state.slots.filter(Boolean).length;
-
-        if (filled < 23) {
-          row.innerHTML = `<div class="empty-state"><span class="big">·</span>Fill all 23 slots to reveal checksum candidates</div>`;
+        if (state.slots.filter(Boolean).length < 23) {
+          row.innerHTML = `<div class="empty-state"><span>·</span>Fill all 23 slots to reveal checksum candidates</div>`;
           return;
         }
-
         const candidates = await computeCandidates();
         row.innerHTML = "";
         candidates.forEach((c) => {
@@ -3028,7 +5591,6 @@
           chip.className =
             "candidate-chip active" + (isSelected ? " selected" : "");
           chip.innerHTML = `<span class="candidate-idx">#${c.index + 1}</span><strong>${c.word}</strong>`;
-          chip.dataset.tip = `bits: ${c.bits}`;
           chip.addEventListener("click", () => {
             state.slot24 = c;
             update();
@@ -3051,10 +5613,8 @@
           return;
         }
         section.classList.add("visible");
-
         const all24 = [...state.slots, state.slot24];
-        const out = document.getElementById("seedOutput");
-        out.innerHTML = all24
+        document.getElementById("seedOutput").innerHTML = all24
           .map(
             (s, i) =>
               `<span class="seed-word"><span class="sw-num">${i + 1}.</span><span class="sw-word">${s ? s.word : "???"}</span></span>`,
@@ -3063,6 +5623,7 @@
       }
 
       async function update() {
+        renderRhythmBar();
         renderPool();
         renderSlots();
         renderSlot24();
@@ -3082,27 +5643,45 @@
         e.currentTarget.classList.add("dragging");
         setTimeout(() => e.currentTarget.classList.remove("dragging"), 0);
       }
-
       function onSlotDragOver(e) {
         e.preventDefault();
         e.currentTarget.classList.add("drag-over");
       }
-
       function onSlotDragLeave(e) {
         e.currentTarget.classList.remove("drag-over");
       }
-
       function onSlotDrop(e) {
         e.preventDefault();
         e.currentTarget.classList.remove("drag-over");
         if (!state.dragWord) return;
         const slotIdx = parseInt(e.currentTarget.dataset.slotIndex);
-
         state.slots[slotIdx] = { ...state.dragWord };
         state.slot24 = null;
         state.dragWord = null;
+        state.typingSlot = null;
         update();
       }
+
+      document.querySelectorAll(".cat-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document
+            .querySelectorAll(".cat-tab")
+            .forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          state.catFilter = tab.dataset.cat;
+          renderPool();
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (state.typingSlot !== null) {
+          const grid = document.getElementById("slotsGrid");
+          if (!grid.contains(e.target)) {
+            state.typingSlot = null;
+            update();
+          }
+        }
+      });
 
       document
         .getElementById("searchInput")
@@ -3110,17 +5689,19 @@
 
       document.getElementById("copyBtn").addEventListener("click", () => {
         const all24 = [...state.slots, state.slot24];
-        const text = all24.map((s) => (s ? s.word : "")).join(" ");
-        navigator.clipboard.writeText(text).then(() => {
-          const btn = document.getElementById("copyBtn");
-          btn.textContent = "Copied!";
-          setTimeout(() => (btn.textContent = "Copy Seed"), 1500);
-        });
+        navigator.clipboard
+          .writeText(all24.map((s) => (s ? s.word : "")).join(" "))
+          .then(() => {
+            const btn = document.getElementById("copyBtn");
+            btn.textContent = "Copied!";
+            setTimeout(() => (btn.textContent = "Copy Seed"), 1500);
+          });
       });
 
       document.getElementById("resetBtn").addEventListener("click", () => {
         state.slots = new Array(23).fill(null);
         state.slot24 = null;
+        state.typingSlot = null;
         update();
       });
 
@@ -3128,12 +5709,11 @@
         update();
       } else {
         document.getElementById("wordPool").innerHTML = `
-    <div class="empty-state" style="width:100%;padding:40px 20px">
-      <div>Paste your WORDLIST array<br>into the script section</div>
-    </div>
-  `;
-        document.getElementById("slotsGrid").innerHTML = "";
+          <div class="empty-state" style="width:100%;padding:40px 20px">
+            Paste your WORDLIST array<br>into the script section
+          </div>`;
         renderSlots();
+        renderRhythmBar();
       }
     </script>
   </body>
