@@ -5276,6 +5276,7 @@
         dragWord: null,
         catFilter: "all",
         typingSlot: null,
+        poolPage: 0,
       };
 
       function renderRhythmBar() {
@@ -5306,6 +5307,7 @@
           .trim();
         const count = document.getElementById("resultCount");
         const catF = state.catFilter;
+        const PAGE_SIZE = 50;
 
         const usageCount = {};
         state.slots.filter(Boolean).forEach((s) => {
@@ -5323,31 +5325,57 @@
           return acc;
         }, []);
 
-        count.innerHTML = `<span>${filtered.length}</span> word${filtered.length !== 1 ? "s" : ""}`;
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+        if (state.poolPage >= totalPages) state.poolPage = 0;
+        const pageSlice = filtered.slice(
+          state.poolPage * PAGE_SIZE,
+          (state.poolPage + 1) * PAGE_SIZE,
+        );
+
+        count.innerHTML = `<span>${filtered.length}</span> word${filtered.length !== 1 ? "s" : ""} · page <span>${state.poolPage + 1}</span>/${totalPages}`;
         pool.innerHTML = "";
 
-        filtered.slice(0, 100).forEach(({ word, index, cat }) => {
+        pageSlice.forEach(({ word, index, cat }) => {
           const uses = usageCount[index] || 0;
           const chip = document.createElement("div");
           chip.className = "word-chip";
           chip.draggable = true;
           chip.dataset.wordIndex = index;
           chip.innerHTML = `
-            <span class="chip-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
-            <span class="chip-idx">#${index + 1}</span>
-            <strong>${word}</strong>
-            ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
-          `;
+      <span class="chip-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
+      <span class="chip-idx">#${index + 1}</span>
+      <strong>${word}</strong>
+      ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
+    `;
           chip.addEventListener("dragstart", onChipDragStart);
           pool.appendChild(chip);
         });
 
-        if (filtered.length > 100) {
-          const note = document.createElement("div");
-          note.style.cssText =
-            "width:100%;padding:6px 4px;font-size:10px;color:#4a6070;";
-          note.textContent = `+${filtered.length - 100} more - narrow search`;
-          pool.appendChild(note);
+        if (totalPages > 1) {
+          const pag = document.createElement("div");
+          pag.style.cssText =
+            "width:100%;display:flex;gap:6px;padding:8px 4px;align-items:center;justify-content:center;flex-shrink:0;";
+          const prev = document.createElement("button");
+          prev.textContent = "<- prev";
+          prev.disabled = state.poolPage === 0;
+          prev.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${state.poolPage === 0 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${state.poolPage === 0 ? "#4a6070" : "#00ff88"};`;
+          prev.addEventListener("click", () => {
+            state.poolPage--;
+            renderPool();
+          });
+
+          const next = document.createElement("button");
+          next.textContent = "next ->";
+          next.disabled = state.poolPage >= totalPages - 1;
+          next.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${state.poolPage >= totalPages - 1 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${state.poolPage >= totalPages - 1 ? "#4a6070" : "#00ff88"};`;
+          next.addEventListener("click", () => {
+            state.poolPage++;
+            renderPool();
+          });
+
+          pag.appendChild(prev);
+          pag.appendChild(next);
+          pool.appendChild(pag);
         }
       }
 
@@ -5475,13 +5503,15 @@
               <div class="slot-remove" data-slot="${i}">✕</div>
             `;
             slot.addEventListener("click", (e) => {
+              e.stopPropagation();
               if (e.target.classList.contains("slot-remove")) return;
               state.typingSlot = i;
               update();
             });
           } else {
             slot.innerHTML += `<div class="slot-empty-hint">drop / type</div>`;
-            slot.addEventListener("click", () => {
+            slot.addEventListener("click", (e) => {
+              e.stopPropagation();
               state.typingSlot = i;
               update();
             });
@@ -5509,7 +5539,10 @@
         state.slots[slotIdx] = { ...wordObj };
         state.slot24 = null;
         state.typingSlot = null;
-        document.getElementById("searchInput").value = "";
+        document.getElementById("searchInput").addEventListener("input", () => {
+          state.poolPage = 0;
+          renderPool();
+        });
         update();
       }
 
@@ -5669,6 +5702,7 @@
             .forEach((t) => t.classList.remove("active"));
           tab.classList.add("active");
           state.catFilter = tab.dataset.cat;
+          state.poolPage = 0;
           renderPool();
         });
       });
