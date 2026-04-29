@@ -440,11 +440,6 @@
         state.slots[slotIdx] = { ...wordObj };
         state.slot24 = null;
         state.typingSlot = null;
-        document.getElementById("searchInput").addEventListener("input", () => {
-          state.poolPage = 0;
-
-          renderPool();
-        });
         update();
       }
 
@@ -619,9 +614,10 @@
         }
       });
 
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", renderPool);
+      document.getElementById("searchInput").addEventListener("input", () => {
+        state.poolPage = 0;
+        renderPool();
+      });
 
       document.getElementById("copyBtn").addEventListener("click", () => {
         const all24 = [...state.slots, state.slot24];
