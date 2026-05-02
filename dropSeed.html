@@ -13,9 +13,14 @@
         <div class="logo-tag">BIP39 BUILDER</div>
       </div>
       <div class="offline-badge">
-        <span class="status-dot"></span>100% OFFLINE · NO NETWORK CALLS
+        <span class="status-dot"></span>100% OFFLINE | NO NETWORK CALLS
       </div>
     </header>
+
+    <div class="mode-switch-bar">
+      <button class="mode-btn" data-mode="12">12-WORD</button>
+      <button class="mode-btn active" data-mode="24">24-WORD</button>
+    </div>
 
     <div class="main">
       <div class="pool-panel">
@@ -29,83 +34,61 @@
               id="searchInput"
               placeholder="search word or #index..."
               autocomplete="off"
-              spellcheck="false"
             />
           </div>
           <div class="result-count" id="resultCount">
             <span>2048</span> words
           </div>
-          <div class="cat-tabs">
-            <div class="cat-tab active" data-cat="all">All</div>
-            <div class="cat-tab" data-cat="noun">Noun</div>
-            <div class="cat-tab" data-cat="verb">Verb</div>
-            <div class="cat-tab" data-cat="adj">Adj</div>
-            <div class="cat-tab" data-cat="adverb">Adverbs</div>
-            <div class="cat-tab" data-cat="specials">Specials</div>
-            <div class="cat-tab" data-cat="determiner">Determiners</div>
-            <div class="cat-tab" data-cat="preposition">Prepositions</div>
-            <div class="cat-tab" data-cat="number">Numbers</div>
-            <div class="cat-tab" data-cat="plural">Plurals</div>
-            <div class="cat-tab" data-cat="verbpast">Verb (past)</div>
-            <div class="cat-tab" data-cat="verbpresent">Verb (present)</div>
-
-            <div class="cat-tab" data-cat="other">Other</div>
-          </div>
         </div>
+        <div class="cat-tabs" id="catTabsContainer"></div>
         <div class="word-pool" id="wordPool"></div>
       </div>
 
       <div class="builder-panel">
-        <div class="rhythm-bar" id="rhythmBar">
-          <div class="rhythm-label">story pattern -></div>
-        </div>
-
+        <div class="rhythm-bar" id="rhythmBar"></div>
         <div class="slots-wrap">
-          <div class="panel-label" style="margin-bottom: 10px">
-            Drag or type words into slots ( 23 of 24 ) - click any slot to type
+          <div class="panel-label" id="slotsLabel" style="margin-bottom: 10px">
+            Drag or type words into slots (0 of 23) · click slot to type
           </div>
           <div class="slots-grid" id="slotsGrid"></div>
-
-          <div class="panel-label" style="margin-bottom: 10px; margin-top: 4px">
-            Word 24 · Checksum-derived (choose one of 8)
+          <div
+            class="panel-label"
+            id="lastWordLabel"
+            style="margin-bottom: 10px; margin-top: 4px"
+          >
+            Last word · Checksum-derived (choose candidate)
           </div>
-          <div id="slot24Wrap">
-            <div class="slot slot-24" id="slot24">
-              <div class="slot-num">24</div>
+          <div id="slotLastWrap">
+            <div class="slot slot-24" id="lastSlot">
+              <div class="slot-num" id="lastSlotNum">24</div>
               <div class="slot-empty-hint">awaiting...</div>
             </div>
           </div>
         </div>
-
         <div class="progress-section">
           <div class="progress-bar-wrap">
             <div class="progress-bar-fill" id="progressFill"></div>
           </div>
           <div class="progress-text">
-            <span id="filledCount">0</span>/23 words placed
+            <span id="filledCount">0</span>/<span id="totalSlotsCount">23</span>
+            words placed
           </div>
         </div>
-
         <div class="candidate-section">
-          <div class="candidate-label">24th word candidates (8 possible)</div>
-          <div class="candidates-row" id="candidatesRow">
-            <div class="empty-state">
-              Fill all 23 slots to reveal checksum candidates
-            </div>
-          </div>
-        </div>
+          <div class="candidate-label" id="candidateLabel"></div>
 
+          <div class="candidates-row" id="candidatesRow"></div>
+        </div>
         <div class="bit-strip-section">
-          <div class="bit-strip-label">253-bit entropy strip · live</div>
+          <div class="bit-strip-label">entropy strip · live</div>
           <div class="bit-strip" id="bitStrip"></div>
         </div>
-
         <div class="output-section" id="outputSection">
-          <div class="output-label">⚡ Complete 24-word seed phrase</div>
+          <div class="output-label">Complete seed phrase</div>
           <div class="seed-phrase" id="seedOutput"></div>
           <div class="output-actions">
-            <button class="btn btn-copy" id="copyBtn">Copy Seed</button>
-            <button class="btn btn-reset" id="resetBtn">Reset</button>
+            <button class="btn btn-copy" id="copyBtn">Copy Seed</button
+            ><button class="btn btn-reset" id="resetBtn">Reset Builder</button>
           </div>
         </div>
       </div>
@@ -128,22 +111,6 @@
         RHYTHM,
       } from "./wordList.js";
 
-      const total =
-        CAT_NOUNS.size +
-        CAT_VERBS.size +
-        CAT_ADJ.size +
-        CAT_SPECIALS.size +
-        CAT_DETERMINERS.size +
-        CAT_PREPOSITIONS.size +
-        CAT_NUMBERS.size +
-        CAT_PLURALS.size +
-        CAT_VERBPRESENT.size +
-        CAT_ADVERBS.size +
-        CAT_VERBSPAST.size;
-
-      console.log("\ntotal words in all categories:", total);
-      console.log("WORDLIST length:", WORDLIST.length);
-
       function getCategory(word) {
         if (CAT_NOUNS.has(word)) return "noun";
         if (CAT_VERBS.has(word)) return "verb";
@@ -158,35 +125,138 @@
         if (CAT_PLURALS.has(word)) return "plural";
         return "other";
       }
-
       function indexToBits(idx) {
         return idx.toString(2).padStart(11, "0");
       }
       function bitsToBytes(bitStr) {
-        const bytes = [];
+        let bytes = [];
         for (let i = 0; i < bitStr.length; i += 8)
           bytes.push(parseInt(bitStr.slice(i, i + 8), 2));
         return new Uint8Array(bytes);
       }
       async function sha256(bytes) {
-        const buf = await crypto.subtle.digest("SHA-256", bytes);
-        return new Uint8Array(buf);
+        return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
       }
 
-      const state = {
-        slots: new Array(23).fill(null),
-        slot24: null,
-        dragWord: null,
-        catFilter: "all",
-        typingSlot: null,
-        poolPage: 0,
-      };
+      let currentMode = "24";
+      let slots = [];
+      let lastWord = null;
+      let typingSlot = null;
+      let dragWord = null;
+      let catFilter = "all";
+      let poolPage = 0;
+
+      function getFreeSlotCount() {
+        return currentMode === "12" ? 11 : 23;
+      }
+
+      function getTotalWordCount() {
+        return currentMode === "12" ? 12 : 24;
+      }
+
+      function getChecksumBits() {
+        return currentMode === "12" ? 4 : 8;
+      }
+
+      function getTailEntropyBits() {
+        return currentMode === "12" ? 7 : 3;
+      }
+
+      function resetSlots() {
+        slots = new Array(getFreeSlotCount()).fill(null);
+        lastWord = null;
+        typingSlot = null;
+      }
+
+      let _cachedEntropyKey = null;
+      let _cachedCandidates = null;
+
+      async function computeLastWordCandidates() {
+        const freeCount = getFreeSlotCount();
+        const filled = slots.filter((s) => s !== null).length;
+        if (filled !== freeCount) {
+          _cachedEntropyKey = null;
+          return [];
+        }
+
+        const key =
+          currentMode + ":" + slots.map((s) => (s ? s.index : -1)).join(",");
+        if (key === _cachedEntropyKey) return _cachedCandidates;
+        _cachedEntropyKey = key;
+
+        let entropyBits = "";
+        for (let i = 0; i < freeCount; i++) {
+          entropyBits += slots[i] ? slots[i].bits : "00000000000";
+        }
+
+        const tailLen = getTailEntropyBits();
+        const checksumLen = getChecksumBits();
+        const maxTail = 1 << tailLen;
+        const candidates = [];
+
+        for (let tail = 0; tail < maxTail; tail++) {
+          const tailBits = tail.toString(2).padStart(tailLen, "0");
+          const fullEntropyStr = entropyBits + tailBits;
+          const entropyBytes = bitsToBytes(fullEntropyStr);
+          const hash = await sha256(entropyBytes);
+
+          let checksumBits = "";
+          let bitsNeeded = checksumLen;
+          let byteIndex = 0;
+
+          while (bitsNeeded > 0 && byteIndex < hash.length) {
+            const byteBits = hash[byteIndex].toString(2).padStart(8, "0");
+            const take = Math.min(bitsNeeded, 8);
+            checksumBits += byteBits.slice(0, take);
+            bitsNeeded -= take;
+            byteIndex++;
+          }
+
+          const lastWordBits = tailBits + checksumBits;
+          const idx = parseInt(lastWordBits, 2);
+
+          if (idx < WORDLIST.length) {
+            candidates.push({
+              bits: lastWordBits,
+              index: idx,
+              word: WORDLIST[idx],
+              tailBits,
+              checksumBits,
+            });
+          }
+        }
+
+        candidates.sort((a, b) => a.index - b.index);
+        _cachedCandidates = candidates;
+        return candidates;
+      }
 
       function renderRhythmBar() {
         const bar = document.getElementById("rhythmBar");
         bar.innerHTML = `<div class="rhythm-label">story pattern -></div>`;
-        const filledCount = state.slots.filter(Boolean).length;
-        RHYTHM.forEach((cat, i) => {
+        const filled = slots.filter(Boolean).length;
+        const targetLen = getFreeSlotCount();
+        let pattern = [];
+        if (RHYTHM && RHYTHM.length >= targetLen)
+          pattern = RHYTHM.slice(0, targetLen);
+        else {
+          const fallback = [
+            "noun",
+            "verb",
+            "adj",
+            "prep",
+            "adv",
+            "noun",
+            "verb",
+            "adj",
+            "det",
+            "plural",
+            "other",
+          ];
+          for (let i = 0; i < targetLen; i++)
+            pattern.push(fallback[i % fallback.length]);
+        }
+        pattern.forEach((cat, i) => {
           if (i > 0) {
             const sep = document.createElement("span");
             sep.className = "rhythm-sep";
@@ -194,135 +264,195 @@
             bar.appendChild(sep);
           }
           const tok = document.createElement("div");
-          tok.className = `rhythm-token ${cat}${i === filledCount ? " active" : ""}`;
-          tok.textContent = cat === "other" ? "prep" : cat;
+          tok.className = `rhythm-token ${cat}${i === filled ? " active" : ""}`;
+          tok.textContent = cat === "other" ? "word" : cat;
           bar.appendChild(tok);
         });
       }
 
+      function updateUILabels(candidates) {
+        const free = getFreeSlotCount();
+        document.getElementById("slotsLabel").innerHTML =
+          `Drag or type words into slots ( ${slots.filter(Boolean).length} of ${free} ) · click slot to type`;
+        document.getElementById("totalSlotsCount").innerText = free;
+        document.getElementById("lastSlotNum").innerText = getTotalWordCount();
+        const lastLabel =
+          currentMode === "12"
+            ? " Word 12 · Checksum-derived (choose one of 128)"
+            : " Word 24 · Checksum-derived (choose one of 8)";
+        document.getElementById("lastWordLabel").innerText = lastLabel;
+        const count = candidates ? candidates.length : 0;
+        const expected = currentMode === "12" ? 128 : 8;
+        document.getElementById("candidateLabel").innerHTML =
+          `${getTotalWordCount()}th word candidates (${count} / ${expected} possible)`;
+        document.getElementById("filledCount").innerText =
+          slots.filter(Boolean).length;
+      }
+
       function renderPool() {
-        const pool = document.getElementById("wordPool");
+        const poolDiv = document.getElementById("wordPool");
         const q = document
           .getElementById("searchInput")
           .value.toLowerCase()
           .trim();
-        const count = document.getElementById("resultCount");
-        const catF = state.catFilter;
-        const PAGE_SIZE = 50;
-
-        const usageCount = {};
-        state.slots.filter(Boolean).forEach((s) => {
-          usageCount[s.index] = (usageCount[s.index] || 0) + 1;
+        const catF = catFilter;
+        const usage = {};
+        slots.filter(Boolean).forEach((s) => {
+          usage[s.index] = (usage[s.index] || 0) + 1;
         });
-
-        const filtered = WORDLIST.reduce((acc, word, i) => {
+        let filtered = WORDLIST.reduce((acc, word, idx) => {
           const cat = getCategory(word);
           const matchCat = catF === "all" || cat === catF;
           const matchText =
             q === "" ||
             word.startsWith(q) ||
-            (q.startsWith("#") && String(i + 1).startsWith(q.slice(1)));
-          if (matchCat && matchText) acc.push({ word, index: i, cat });
+            (q.startsWith("#") && String(idx + 1).startsWith(q.slice(1)));
+          if (matchCat && matchText) acc.push({ word, index: idx, cat });
           return acc;
         }, []);
-
-        const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-        if (state.poolPage >= totalPages) state.poolPage = 0;
-        const pageSlice = filtered.slice(
-          state.poolPage * PAGE_SIZE,
-          (state.poolPage + 1) * PAGE_SIZE,
-        );
-
-        count.innerHTML = `<span>${filtered.length}</span> word${filtered.length !== 1 ? "s" : ""} · page <span>${state.poolPage + 1}</span>/${totalPages}`;
-        pool.innerHTML = "";
-
-        pageSlice.forEach(({ word, index, cat }) => {
-          const uses = usageCount[index] || 0;
+        const PAGE = 50;
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE));
+        if (poolPage >= totalPages) poolPage = 0;
+        const slice = filtered.slice(poolPage * PAGE, (poolPage + 1) * PAGE);
+        document.getElementById("resultCount").innerHTML =
+          `<span>${filtered.length}</span> words · page ${poolPage + 1}/${totalPages}`;
+        poolDiv.innerHTML = "";
+        slice.forEach(({ word, index, cat }) => {
+          const uses = usage[index] || 0;
           const chip = document.createElement("div");
           chip.className = "word-chip";
           chip.draggable = true;
           chip.dataset.wordIndex = index;
-          chip.innerHTML = `
-            <span class="chip-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
-            <span class="chip-idx">#${index + 1}</span>
-            <strong>${word}</strong>
-            ${uses > 0 ? `<span class="chip-use-count">×${uses}</span>` : ""}
-          `;
-          chip.addEventListener("dragstart", onChipDragStart);
-          pool.appendChild(chip);
+          chip.innerHTML = `<span class="chip-cat ${cat}">${cat === "other" ? "oth" : cat.slice(0, 3)}</span><span class="chip-idx">#${index + 1}</span><strong>${word}</strong>${uses ? `<span class="chip-use-count">x${uses}</span>` : ""}`;
+          chip.addEventListener("dragstart", (e) => {
+            dragWord = { word, index, bits: indexToBits(index) };
+            e.currentTarget.classList.add("dragging");
+            setTimeout(() => e.currentTarget.classList.remove("dragging"), 0);
+          });
+          poolDiv.appendChild(chip);
         });
-
         if (totalPages > 1) {
-          const pag = document.createElement("div");
-          pag.style.cssText =
+          const pagWrap = document.createElement("div");
+          pagWrap.style.cssText =
             "width:100%;display:flex;gap:6px;padding:8px 4px;align-items:center;justify-content:center;flex-shrink:0;";
-          const prev = document.createElement("button");
-          prev.textContent = "<- prev";
-          prev.disabled = state.poolPage === 0;
-          prev.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${state.poolPage === 0 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${state.poolPage === 0 ? "#4a6070" : "#00ff88"};`;
-          prev.addEventListener("click", () => {
-            state.poolPage--;
-            renderPool();
-          });
 
-          const next = document.createElement("button");
-          next.textContent = "next ->";
-          next.disabled = state.poolPage >= totalPages - 1;
-          next.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${state.poolPage >= totalPages - 1 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${state.poolPage >= totalPages - 1 ? "#4a6070" : "#00ff88"};`;
-          next.addEventListener("click", () => {
-            state.poolPage++;
+          const prevBtn = document.createElement("button");
+          prevBtn.textContent = "<- prev";
+          prevBtn.disabled = poolPage === 0;
+          prevBtn.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${poolPage === 0 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${poolPage === 0 ? "#4a6070" : "#00ff88"};`;
+          prevBtn.onclick = () => {
+            poolPage--;
             renderPool();
-          });
+          };
 
-          pag.appendChild(prev);
-          pag.appendChild(next);
-          pool.appendChild(pag);
+          const nextBtn = document.createElement("button");
+          nextBtn.textContent = "next ->";
+          nextBtn.disabled = poolPage >= totalPages - 1;
+          nextBtn.style.cssText = `font-family:monospace;font-size:10px;padding:4px 35px;border-radius:3px;cursor:pointer;border:1px solid ${poolPage >= totalPages - 1 ? "#1e2d3a" : "#00ff88"};background:transparent;color:${poolPage >= totalPages - 1 ? "#4a6070" : "#00ff88"};`;
+          nextBtn.onclick = () => {
+            poolPage++;
+            renderPool();
+          };
+
+          pagWrap.append(prevBtn, nextBtn);
+          poolDiv.appendChild(pagWrap);
         }
+      }
+
+      function renderCandidates(candidates) {
+        const row = document.getElementById("candidatesRow");
+        const filledCount = slots.filter(Boolean).length;
+        if (filledCount !== getFreeSlotCount()) {
+          row.innerHTML = `<div class="empty-state">Fill all ${getFreeSlotCount()} slots to reveal checksum candidates</div>`;
+          return;
+        }
+        if (!candidates.length) {
+          row.innerHTML = `<div class="empty-state">No valid last word (edge case)</div>`;
+          return;
+        }
+        row.innerHTML = "";
+
+        candidates.forEach((c) => {
+          const cat = getCategory(c.word);
+          let catShort = cat === "other" ? "oth" : cat.slice(0, 3);
+
+          const labelMap = {
+            noun: "NOU",
+            verb: "VER",
+            adj: "ADJ",
+            adverb: "ADV",
+            specials: "SPE",
+            preposition: "PRE",
+            determiner: "DET",
+            number: "NUM",
+            plural: "PLU",
+            verbpast: "VPA",
+            verbpresent: "VPR",
+          };
+          catShort = labelMap[cat] || catShort.toUpperCase();
+
+          const chip = document.createElement("div");
+          chip.className = `candidate-chip active ${lastWord && lastWord.index === c.index ? "selected" : ""}`;
+          chip.style.cssText = `
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 8px;
+                  background: ${lastWord && lastWord.index === c.index ? "#2a5f6e" : "#1a2f38"};
+                  padding: 6px 14px;
+                  border-radius: 32px;
+                  font-size: 13px;
+                  cursor: pointer;
+                  transition: all 0.1s ease;
+                  border: 1px solid ${lastWord && lastWord.index === c.index ? "#8effc2" : "#2a4a55"};
+                `;
+          chip.innerHTML = `
+                  <span class="chip-cat ${cat}" style="background:#0f1e24;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:bold;">${catShort}</span>
+                  <span style="color:#7a9eaa;font-size:10px;">#${c.index + 1}</span>
+                  <strong style="color:#e2f0e8;">${c.word}</strong>
+                `;
+          chip.addEventListener("click", () => {
+            lastWord = c;
+            updateAll();
+          });
+          row.appendChild(chip);
+        });
       }
 
       function renderSlots() {
         const grid = document.getElementById("slotsGrid");
         grid.innerHTML = "";
-
-        for (let i = 0; i < 23; i++) {
-          const slot = document.createElement("div");
-          const s = state.slots[i];
-          const isTyping = state.typingSlot === i;
-          slot.className =
-            "slot" + (s ? " filled" : "") + (isTyping ? " typing" : "");
-          slot.dataset.slotIndex = i;
-          slot.innerHTML = `<div class="slot-num">${i + 1}</div>`;
-
+        const freeN = getFreeSlotCount();
+        for (let i = 0; i < freeN; i++) {
+          const slotDiv = document.createElement("div");
+          const s = slots[i];
+          const isTyping = typingSlot === i;
+          slotDiv.className = `slot ${s ? "filled" : ""} ${isTyping ? "typing" : ""}`;
+          slotDiv.dataset.slotIndex = i;
+          slotDiv.innerHTML = `<div class="slot-num">${i + 1}</div>`;
           if (isTyping) {
             const wrap = document.createElement("div");
-            wrap.className = "slot-input-wrap";
             wrap.style.position = "relative";
-
             const inp = document.createElement("input");
             inp.className = "slot-inline-input";
-            inp.placeholder = "type...";
+            inp.placeholder = "type word...";
             inp.autocomplete = "off";
-            inp.spellcheck = false;
             if (s) inp.value = s.word;
-
             const dd = document.createElement("div");
             dd.className = "ac-dropdown";
             dd.style.display = "none";
-
-            let acIdx = -1;
-            let acItems = [];
-
-            const buildDropdown = (q) => {
+            let acItems = [],
+              acIdx = -1;
+            const updateDropdown = (query) => {
               dd.innerHTML = "";
               acItems = [];
               acIdx = -1;
-              if (!q) {
+              if (!query) {
                 dd.style.display = "none";
                 return;
               }
-              const matches = WORDLIST.reduce((acc, word, wi) => {
-                if (word.startsWith(q.toLowerCase()))
-                  acc.push({ word, index: wi });
+              const matches = WORDLIST.reduce((acc, w, wi) => {
+                if (w.startsWith(query.toLowerCase()))
+                  acc.push({ word: w, index: wi });
                 return acc;
               }, []).slice(0, 12);
               if (!matches.length) {
@@ -334,22 +464,17 @@
                 const item = document.createElement("div");
                 item.className = "ac-item";
                 item.dataset.mi = mi;
-                item.innerHTML = `
-                        <span class="ac-item-idx">#${index + 1}</span>
-                        <span class="ac-item-word">${word}</span>
-                        <span class="ac-item-cat ${cat}">${cat === "other" ? "prep" : cat}</span>
-                      `;
+                item.innerHTML = `<span class="ac-item-idx">#${index + 1}</span><span>${word}</span><span class="chip-cat ${cat}">${cat.slice(0, 3)}</span>`;
                 item.addEventListener("mousedown", (e) => {
                   e.preventDefault();
-                  placeWord(i, { word, index, bits: indexToBits(index) });
+                  placeWordInSlot(i, { word, index, bits: indexToBits(index) });
                 });
                 dd.appendChild(item);
                 acItems.push({ word, index });
               });
               dd.style.display = "block";
             };
-
-            inp.addEventListener("input", () => buildDropdown(inp.value));
+            inp.addEventListener("input", () => updateDropdown(inp.value));
             inp.addEventListener("keydown", (e) => {
               const items = dd.querySelectorAll(".ac-item");
               if (e.key === "ArrowDown") {
@@ -366,114 +491,106 @@
                 );
               } else if (e.key === "Enter") {
                 e.preventDefault();
-                if (acIdx >= 0 && acItems[acIdx]) {
-                  const { word, index } = acItems[acIdx];
-                  placeWord(i, { word, index, bits: indexToBits(index) });
-                } else if (acItems.length === 1) {
-                  const { word, index } = acItems[0];
-                  placeWord(i, { word, index, bits: indexToBits(index) });
-                }
+                if (acIdx >= 0 && acItems[acIdx])
+                  placeWordInSlot(i, acItems[acIdx]);
+                else if (acItems.length === 1) placeWordInSlot(i, acItems[0]);
               } else if (e.key === "Escape") {
-                state.typingSlot = null;
-                update();
+                typingSlot = null;
+                updateAll();
               }
             });
-            inp.addEventListener("blur", () => {
+            inp.addEventListener("blur", () =>
               setTimeout(() => {
-                if (state.typingSlot === i) {
-                  state.typingSlot = null;
-                  update();
+                if (typingSlot === i) {
+                  typingSlot = null;
+                  updateAll();
                 }
-              }, 200);
-            });
-
-            wrap.appendChild(inp);
-            wrap.appendChild(dd);
-            slot.appendChild(wrap);
-
+              }, 150),
+            );
+            wrap.append(inp, dd);
+            slotDiv.appendChild(wrap);
             setTimeout(() => {
               inp.focus();
-              if (s) buildDropdown(s.word);
-            }, 0);
+              if (s) updateDropdown(s.word);
+            }, 10);
           } else if (s) {
             const cat = getCategory(s.word);
-            slot.innerHTML += `
-                    <div class="slot-cat-dot ${cat}"></div>
-                    <div class="slot-word">${s.word}</div>
-                    <div class="slot-bits">${s.bits}</div>
-                    <div class="slot-remove" data-slot="${i}">✕</div>
-                  `;
-            slot.addEventListener("click", (e) => {
-              e.stopPropagation();
-              if (e.target.classList.contains("slot-remove")) return;
-              state.typingSlot = i;
-              update();
+            slotDiv.innerHTML += `<div class="slot-cat-dot ${cat}"></div><div class="slot-word">${s.word}</div><div class="slot-bits">${s.bits}</div><div class="slot-remove" data-slot="${i}">✕</div>`;
+            slotDiv.addEventListener("click", (e) => {
+              if (!e.target.classList.contains("slot-remove")) {
+                typingSlot = i;
+                updateAll();
+              }
             });
           } else {
-            slot.innerHTML += `<div class="slot-empty-hint">drop / type</div>`;
-            slot.addEventListener("click", (e) => {
-              e.stopPropagation();
-              state.typingSlot = i;
-              update();
+            slotDiv.innerHTML += `<div class="slot-empty-hint">drop / type</div>`;
+            slotDiv.addEventListener("click", () => {
+              typingSlot = i;
+              updateAll();
             });
           }
-
-          slot.addEventListener("dragover", onSlotDragOver);
-          slot.addEventListener("dragleave", onSlotDragLeave);
-          slot.addEventListener("drop", onSlotDrop);
-          grid.appendChild(slot);
+          slotDiv.addEventListener("dragover", (e) => e.preventDefault());
+          slotDiv.addEventListener("drop", (e) => {
+            e.preventDefault();
+            if (dragWord) {
+              placeWordInSlot(i, dragWord);
+              dragWord = null;
+            }
+          });
+          grid.appendChild(slotDiv);
         }
-
-        document.querySelectorAll(".slot-remove").forEach((btn) => {
+        document.querySelectorAll(".slot-remove").forEach((btn) =>
           btn.addEventListener("click", (e) => {
             e.stopPropagation();
             const idx = parseInt(btn.dataset.slot);
-            state.slots[idx] = null;
-            state.slot24 = null;
-            state.typingSlot = null;
-            update();
-          });
-        });
+            slots[idx] = null;
+            lastWord = null;
+            typingSlot = null;
+            updateAll();
+          }),
+        );
       }
 
-      function placeWord(slotIdx, wordObj) {
-        state.slots[slotIdx] = { ...wordObj };
-        state.slot24 = null;
-        state.typingSlot = null;
-        update();
+      function placeWordInSlot(idx, wordObj) {
+        slots[idx] = {
+          word: wordObj.word,
+          index: wordObj.index,
+          bits: wordObj.bits ?? indexToBits(wordObj.index),
+        };
+        lastWord = null;
+        typingSlot = null;
+        updateAll();
       }
 
-      function renderSlot24() {
-        const slot = document.getElementById("slot24");
-        const s = state.slot24;
-        slot.className = "slot slot-24" + (s ? " filled" : "");
-        slot.innerHTML = `<div class="slot-num">24</div>`;
-        if (s) {
-          const cat = getCategory(s.word);
-          slot.innerHTML += `
-                  <div class="slot-cat-dot ${cat}" style="right:7px;top:4px;position:absolute;"></div>
-                  <div class="slot-word" style="color:var(--accent2)">${s.word}</div>
-                  <div class="slot-bits">${s.bits}</div>
-                `;
-        } else {
-          slot.innerHTML += `<div class="slot-empty-hint">awaiting...</div>`;
+      function renderLastSlot() {
+        const container = document.getElementById("lastSlot");
+        const lastNum = getTotalWordCount();
+        if (!lastWord) {
+          container.innerHTML = `<div class="slot-num">${lastNum}</div><div class="slot-empty-hint">awaiting candidate click</div>`;
+          container.className = "slot slot-24";
+          return;
         }
+        const cat = getCategory(lastWord.word);
+        container.className = "slot slot-24 filled";
+        container.innerHTML = `<div class="slot-num">${lastNum}</div><div class="slot-cat-dot ${cat}" style="position:absolute;right:8px;top:8px;"></div><div class="slot-word" style="color:#8effc2">${lastWord.word}</div><div class="slot-bits">${lastWord.bits}</div>`;
       }
 
       function renderBitStrip() {
         const strip = document.getElementById("bitStrip");
         strip.innerHTML = "";
-        for (let i = 0; i < 23; i++) {
-          const s = state.slots[i];
+        const free = getFreeSlotCount();
+        for (let i = 0; i < free; i++) {
+          const s = slots[i];
           const bits = s ? s.bits : "00000000000";
           const filled = !!s;
           for (let b = 0; b < 11; b++) {
-            const bit = document.createElement("div");
-            bit.className =
+            const bitDiv = document.createElement("div");
+            bitDiv.className =
               "bit" + (filled ? (bits[b] === "1" ? " b1" : " b0") : "");
-            strip.appendChild(bit);
+            bitDiv.textContent = "";
+            strip.appendChild(bitDiv);
           }
-          if (i < 22) {
+          if (i < free - 1) {
             const sep = document.createElement("div");
             sep.className = "bit-group-sep";
             strip.appendChild(sep);
@@ -481,70 +598,23 @@
         }
       }
 
-      async function computeCandidates() {
-        const bits253 = state.slots
-          .map((s) => (s ? s.bits : "00000000000"))
-          .join("");
-        const candidates = [];
-        for (let b = 0; b < 8; b++) {
-          const suffix3 = b.toString(2).padStart(3, "0");
-          const full256bits = bits253 + suffix3;
-          const entropy = bitsToBytes(full256bits);
-          const hashBuf = await sha256(entropy);
-          const checksumBits = hashBuf[0].toString(2).padStart(8, "0");
-          const word24bits = suffix3 + checksumBits;
-          const word24idx = parseInt(word24bits, 2);
-          if (word24idx < WORDLIST.length) {
-            candidates.push({
-              suffix3,
-              checksumBits,
-              bits: word24bits,
-              index: word24idx,
-              word: WORDLIST[word24idx],
-            });
-          }
-        }
-        return candidates;
-      }
-
-      async function renderCandidates() {
-        const row = document.getElementById("candidatesRow");
-        if (state.slots.filter(Boolean).length < 23) {
-          row.innerHTML = `<div class="empty-state"><span>·</span>Fill all 23 slots to reveal checksum candidates</div>`;
-          return;
-        }
-        const candidates = await computeCandidates();
-        row.innerHTML = "";
-        candidates.forEach((c) => {
-          const chip = document.createElement("div");
-          const isSelected = state.slot24 && state.slot24.index === c.index;
-          chip.className =
-            "candidate-chip active" + (isSelected ? " selected" : "");
-          chip.innerHTML = `<span class="candidate-idx">#${c.index + 1}</span><strong>${c.word}</strong>`;
-          chip.addEventListener("click", () => {
-            state.slot24 = c;
-            update();
-          });
-          row.appendChild(chip);
-        });
-      }
-
       function renderProgress() {
-        const filled = state.slots.filter(Boolean).length;
-        document.getElementById("filledCount").textContent = filled;
+        const filled = slots.filter(Boolean).length;
+        const total = getFreeSlotCount();
         document.getElementById("progressFill").style.width =
-          `${(filled / 23) * 100}%`;
+          `${(filled / total) * 100}%`;
       }
 
       function renderOutput() {
-        const section = document.getElementById("outputSection");
-        if (!state.slot24) {
-          section.classList.remove("visible");
+        const outDiv = document.getElementById("seedOutput");
+        if (!lastWord) {
+          document.getElementById("outputSection").classList.remove("visible");
+          outDiv.innerHTML = "";
           return;
         }
-        section.classList.add("visible");
-        const all24 = [...state.slots, state.slot24];
-        document.getElementById("seedOutput").innerHTML = all24
+        document.getElementById("outputSection").classList.add("visible");
+        const allWords = [...slots, lastWord];
+        outDiv.innerHTML = allWords
           .map(
             (s, i) =>
               `<span class="seed-word"><span class="sw-num">${i + 1}.</span><span class="sw-word">${s ? s.word : "???"}</span></span>`,
@@ -552,101 +622,131 @@
           .join(" ");
       }
 
-      async function update() {
+      async function updateAll() {
+        const candidates = await computeLastWordCandidates();
         renderRhythmBar();
         renderPool();
         renderSlots();
-        renderSlot24();
+        renderLastSlot();
         renderBitStrip();
         renderProgress();
-        await renderCandidates();
+        renderCandidates(candidates);
         renderOutput();
+        updateUILabels(candidates);
       }
 
-      function onChipDragStart(e) {
-        const idx = parseInt(e.currentTarget.dataset.wordIndex);
-        state.dragWord = {
-          word: WORDLIST[idx],
-          index: idx,
-          bits: indexToBits(idx),
-        };
-        e.currentTarget.classList.add("dragging");
-        setTimeout(() => e.currentTarget.classList.remove("dragging"), 0);
-      }
-      function onSlotDragOver(e) {
-        e.preventDefault();
-        e.currentTarget.classList.add("drag-over");
-      }
-      function onSlotDragLeave(e) {
-        e.currentTarget.classList.remove("drag-over");
-      }
-      function onSlotDrop(e) {
-        e.preventDefault();
-        e.currentTarget.classList.remove("drag-over");
-        if (!state.dragWord) return;
-        const slotIdx = parseInt(e.currentTarget.dataset.slotIndex);
-        state.slots[slotIdx] = { ...state.dragWord };
-        state.slot24 = null;
-        state.dragWord = null;
-        state.typingSlot = null;
-        update();
+      function initMode(mode) {
+        currentMode = mode;
+        dragWord = null;
+        resetSlots();
+        lastWord = null;
+        typingSlot = null;
+        poolPage = 0;
+        updateAll();
       }
 
-      document.querySelectorAll(".cat-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
+      const categories = [
+        "all",
+        "noun",
+        "verb",
+        "adj",
+        "adverb",
+        "specials",
+        "determiner",
+        "preposition",
+        "number",
+        "plural",
+        "verbpast",
+        "verbpresent",
+        "other",
+      ];
+      function buildCatTabs() {
+        const container = document.getElementById("catTabsContainer");
+        container.innerHTML = "";
+        categories.forEach((cat) => {
+          const tab = document.createElement("div");
+          tab.className = `cat-tab ${catFilter === cat ? "active" : ""}`;
+          tab.dataset.cat = cat;
+          tab.innerText =
+            cat === "verbpast"
+              ? "verb(past)"
+              : cat === "verbpresent"
+                ? "verb(present)"
+                : cat.charAt(0).toUpperCase() + cat.slice(1);
+          tab.addEventListener("click", () => {
+            catFilter = cat;
+            poolPage = 0;
+            document
+              .querySelectorAll(".cat-tab")
+              .forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+            renderPool();
+          });
+          container.appendChild(tab);
+        });
+      }
+
+      async function copyToClipboard(text) {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+
+          return true;
+        }
+
+        const ta = document.createElement("textarea");
+
+        Object.assign(ta.style, { position: "fixed", opacity: "0", top: "0" });
+
+        ta.value = text;
+
+        document.body.appendChild(ta);
+
+        ta.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(ta);
+
+        return true;
+      }
+      document.querySelectorAll(".mode-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
           document
-            .querySelectorAll(".cat-tab")
-            .forEach((t) => t.classList.remove("active"));
-          tab.classList.add("active");
-          state.catFilter = tab.dataset.cat;
-          state.poolPage = 0;
-          renderPool();
+            .querySelectorAll(".mode-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const mode = btn.dataset.mode;
+          initMode(mode);
         });
       });
 
-      document.addEventListener("click", (e) => {
-        if (state.typingSlot !== null) {
-          const grid = document.getElementById("slotsGrid");
-          if (!grid.contains(e.target)) {
-            state.typingSlot = null;
-            update();
-          }
-        }
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        resetSlots();
+        lastWord = null;
+        typingSlot = null;
+        updateAll();
       });
 
       document.getElementById("searchInput").addEventListener("input", () => {
-        state.poolPage = 0;
+        poolPage = 0;
         renderPool();
       });
-
-      document.getElementById("copyBtn").addEventListener("click", () => {
-        const all24 = [...state.slots, state.slot24];
-        navigator.clipboard
-          .writeText(all24.map((s) => (s ? s.word : "")).join(" "))
-          .then(() => {
-            const btn = document.getElementById("copyBtn");
-            btn.textContent = "Copied!";
-            setTimeout(() => (btn.textContent = "Copy Seed"), 1500);
-          });
+      document.getElementById("copyBtn").addEventListener("click", async () => {
+        if (!lastWord) return;
+        const phrase = [...slots, lastWord].map((s) => s.word).join(" ");
+        try {
+          await copyToClipboard(phrase);
+          const btn = document.getElementById("copyBtn");
+          btn.textContent = "Copied!";
+          setTimeout(() => (btn.textContent = "Copy Seed"), 1200);
+        } catch (e) {
+          alert("Copy failed, select the phrase manually");
+        }
       });
 
-      document.getElementById("resetBtn").addEventListener("click", () => {
-        state.slots = new Array(23).fill(null);
-        state.slot24 = null;
-        state.typingSlot = null;
-        update();
-      });
-
-      if (WORDLIST.length > 0) {
-        update();
-      } else {
-        document.getElementById("wordPool").innerHTML = `
-                <div class="empty-state" style="width:100%;padding:40px 20px">
-                  Paste your WORDLIST array<br>into the script section
-                </div>`;
-        renderSlots();
-        renderRhythmBar();
-      }
+      buildCatTabs();
+      resetSlots();
+      updateAll();
     </script>
   </body>
 </html>

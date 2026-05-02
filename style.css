@@ -24,6 +24,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  user-select: none;
 }
 
 body {
@@ -191,6 +192,7 @@ body::before {
   gap: 4px;
   margin-top: 10px;
   flex-wrap: wrap;
+  padding: 5px 10px;
 }
 .cat-tab {
   font-size: 9px;
@@ -621,9 +623,9 @@ body::before {
 }
 .slot-remove {
   position: absolute;
-  top: 4px;
+  bottom: 5px;
   right: 6px;
-  font-size: 10px;
+  font-size: 15px;
   color: var(--muted);
   cursor: pointer;
   opacity: 0;
@@ -736,6 +738,11 @@ body::before {
   padding: 12px 20px;
   border-top: 1px solid var(--border);
   background: var(--surface);
+  flex-shrink: 0;
+  max-height: 280px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .candidate-label {
   font-size: 9px;
@@ -756,20 +763,32 @@ body::before {
 }
 .candidates-row {
   display: flex;
-  gap: 7px;
   flex-wrap: wrap;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 6px;
+  background: #0a1a1f;
+  border-radius: 16px;
+  margin-top: 6px;
 }
 
-.candidate-chip {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
+.candidates-row::-webkit-scrollbar {
+  width: 4px;
+}
+
+.candidates-row::-webkit-scrollbar-track {
+  background: #1a2a35;
   border-radius: 4px;
-  background: var(--surface2);
-  font-family: monospace;
-  font-size: 11px;
-  color: var(--muted);
-  cursor: not-allowed;
-  transition: all 0.2s;
+}
+.candidates-row::-webkit-scrollbar-thumb {
+  background: var(--accent2);
+  border-radius: 4px;
+}
+.candidate-chip {
+  padding: 4px 10px;
+  font-size: 10px;
 }
 .candidate-chip.active {
   cursor: pointer;
@@ -959,4 +978,40 @@ body::before {
   letter-spacing: 1px;
   text-align: center;
   gap: 6px;
+}
+
+.mode-btn {
+  background: transparent;
+  border: none;
+  color: #8aaec0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 6px 20px;
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: monospace;
+}
+
+.bit {
+  width: 7px;
+  height: 12px;
+  font-size: 6px;
+  line-height: 12px;
+  text-align: center;
+  font-family: monospace;
+}
+
+.mode-switch-bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.mode-btn.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 700;
 }
