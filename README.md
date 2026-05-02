@@ -30,9 +30,9 @@ so my mental model was clear. i wanted to create a project where i would let use
 <br>
 those 3 tail entropy bits have 2^3 = 8 possible values ( 000, 001, 010, 011, 100, 101, 110, 111 ). for each of these 8 candidates, the program assembles a unique 256 bit entropy ( your 253 bits + the 3 bit suffix ), computes SHA256 of that entropy, takes the first 8 bits as the checksum, and concatenates: 3 bit suffix + 8 bit checksum = 11 bits = one BIP39 word index. so each candidate produces 8 possible valid 24th words, and users can choose any one of them. it's mind blowing already ( i want to add things which goes beyond imagination )
 
-BIP39 math: free_words × 11 = entropy_bits
-12-word: 11×11=121 bits free + 7 tail + 4 checksum = 132 = 12×11
-24-word: 23×11=253 bits free + 3 tail + 8 checksum = 264 = 24×11
+BIP39 math: free_words × 11 = entropy_bits <br>
+12-word: 11×11=121 bits free + 7 tail + 4 checksum = 132 = 12×11 <br>
+24-word: 23×11=253 bits free + 3 tail + 8 checksum = 264 = 24×11 <br>
 
 i implemented 12 seed option too, users also can switch to the 12 word seed, building sentences using that option might seem easy, but don't forget that brute forcing also becomes easier on basic words combinations
 
