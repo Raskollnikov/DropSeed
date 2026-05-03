@@ -2,7 +2,21 @@
 
 > Drag words. Build stories, let the checksum finish the sentence
 
+## DEMO FOR TESTING [DropSeed](https://dropseed.vercel.app/)
+
+## [TRY it live before using it](https://dropseed.vercel.app/)
+
+## Don't generate seeds online ( only for testing ), install official [RELEASE](https://github.com/Raskollnikov/DropSeed/releases/edit/1.0.0)
+
+## I am using Tails Os + No Bluetooth/SSD/HDD/WIFI/Ethernet. only single html file ( with valid hash and that's it ) 
+
+```bash
+sha256sum dropSeed.html ->  e4d4bf2a1ec5be9a720eaca8ea1493bdff45d12d03ed08dcfe020f76d4a9684f
+```
+
+
 **The offline BIP39 tool that turns broken English and ridiculous repetition into valid, memorable Bitcoin seeds**
+
 
 ---
 
@@ -58,11 +72,43 @@ grammar is broken.
 repetition is heavy.  
 memorability is high.
 
-in order to make building sentences easier, i inspected these words and split into different categories such as ( Noun, Verb, Adjectives, Adverbs, Specials, Months, etc... etc... )
+SCREENSHOTS
 
-i did that using [Text Inspector](https://textinspector.com/parts-of-speech-identifier/)
+Personal favorite
 
-right now my project is still improving ( i will show every detail + screenshots after the final release )
+satoshi master mind able develop digital gold change world toward better royal
+
+<img width="1832" height="939" alt="image" src="https://github.com/user-attachments/assets/5e4100d9-1952-4286-af39-f9f27a955372" />
+
+all the seeds are totally valid ( it's sparrow wallet )
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6d275873-2a44-487a-b6e9-a8cd89e86994" />
+
+<img width="652" height="715" alt="image" src="https://github.com/user-attachments/assets/5017c9ce-44bb-4ef3-8500-91fcc9600772" />
+
+<img width="652" height="715" alt="image" src="https://github.com/user-attachments/assets/c4842e74-58de-486f-86dc-da22de85a7d3" />
+
+<br>
+<img width="1796" height="922" alt="image" src="https://github.com/user-attachments/assets/67c67256-37a8-4a39-b5d8-dace8a950ccc" />
+<br>
+<img width="1796" height="922" alt="image" src="https://github.com/user-attachments/assets/8301388a-2338-473a-9aad-d409d6c8fc45" />
+<br>
+<img width="1796" height="922" alt="image" src="https://github.com/user-attachments/assets/8e3192bb-5668-4446-9768-8100b13df941" />
+<br>
+<img width="1796" height="922" alt="image" src="https://github.com/user-attachments/assets/0d2b509c-e8bf-43d5-8d7a-049fd4169349" />
+<br>
+<img width="1796" height="922" alt="image" src="https://github.com/user-attachments/assets/efd7fbf1-a175-477e-8f74-28c4c12b12c1" />
+
+
+## in order to make building sentences easier, i inspected these words and split into different categories such as ( Noun, Verb, Adjectives, Adverbs, Specials, Months, etc... etc... )
+
+## i did that using [Text Inspector](https://textinspector.com/parts-of-speech-identifier/)
+## i pasted full 2048 words there, and these website automatically splits the words into the different parts of speech
+
+
+<img width="1836" height="956" alt="image" src="https://github.com/user-attachments/assets/ec1e92f0-54a8-4c24-9300-91bd8c9366db" />
+<img width="1836" height="956" alt="image" src="https://github.com/user-attachments/assets/b3a8ebf0-0d3f-4267-98c1-62c91f657c9a" />
+
 
 ---
 
