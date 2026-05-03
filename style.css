@@ -969,3 +969,15 @@ body {
   align-items: center;
   gap: 6px;
 }
+
+.offline-badge-link {
+  color: var(--alert);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  letter-spacing: 2px;
+  transition: color 0.15s;
+}
+
+.offline-badge-link:hover {
+  color: #fff;
+}
