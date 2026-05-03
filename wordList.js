@@ -4122,32 +4122,6 @@ const CAT_VERBSPAST = new Set([
   "thought",
 ]);
 
-const RHYTHM = [
-  "noun",
-  "verb",
-  "adj",
-  "noun",
-  "verb",
-  "other",
-  "noun",
-  "verb",
-  "adj",
-  "noun",
-  "verb",
-  "other",
-  "noun",
-  "adj",
-  "noun",
-  "verb",
-  "other",
-  "noun",
-  "verb",
-  "adj",
-  "noun",
-  "verb",
-  "adj",
-];
-
 export {
   CAT_NOUNS,
   CAT_VERBS,
@@ -4160,5 +4134,4 @@ export {
   CAT_VERBPRESENT,
   CAT_ADVERBS,
   CAT_VERBSPAST,
-  RHYTHM,
 };

@@ -13,6 +13,7 @@
   --slot-border-empty: #1e3040;
   --slot-border-filled: #00ff8844;
   --danger: #ff3b5c;
+  --alert: #ed0a30;
 
   --cat-noun: #00c4ff;
   --cat-verb: #ff6b35;
@@ -58,6 +59,10 @@ body::before {
   z-index: 0;
 }
 
+html,
+body {
+  overflow: hidden;
+}
 .header {
   position: relative;
   z-index: 10;
@@ -124,7 +129,7 @@ body::before {
   z-index: 1;
   display: grid;
   grid-template-columns: 300px 1fr;
-  height: calc(100vh - 65px);
+  height: calc(100vh - 143px);
   overflow: hidden;
 }
 
@@ -455,77 +460,16 @@ body::before {
   overflow: hidden;
 }
 
-.rhythm-bar {
-  padding: 8px 20px;
-  border-bottom: 1px solid var(--border);
-  background: #0a1118;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-.rhythm-bar::-webkit-scrollbar {
-  display: none;
-}
-.rhythm-label {
-  font-size: 8px;
-  letter-spacing: 2px;
-  color: var(--muted);
-  text-transform: uppercase;
-  white-space: nowrap;
-  margin-right: 4px;
-  flex-shrink: 0;
-}
-.rhythm-token {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 2px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  opacity: 0.5;
-}
-.rhythm-token.noun {
-  color: var(--cat-noun);
-  background: #00c4ff10;
-  border: 1px solid #00c4ff20;
-}
-.rhythm-token.verb {
-  color: var(--cat-verb);
-  background: #ff6b3510;
-  border: 1px solid #ff6b3520;
-}
-.rhythm-token.adj {
-  color: var(--cat-adj);
-  background: #b084ff10;
-  border: 1px solid #b084ff20;
-}
-.rhythm-token.other {
-  color: var(--cat-other);
-  background: #ffd06010;
-  border: 1px solid #ffd06020;
-}
-.rhythm-token.active {
-  opacity: 1;
-  box-shadow: 0 0 8px currentColor;
-}
-.rhythm-sep {
-  color: var(--muted);
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
 .slots-wrap {
   flex: 1;
   overflow-y: auto;
   padding: 16px 20px;
 }
+
 .slots-wrap::-webkit-scrollbar {
   width: 3px;
 }
+
 .slots-wrap::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 2px;
@@ -813,7 +757,7 @@ body::before {
 }
 
 .bit-strip-section {
-  padding: 10px 20px;
+  padding: 15px 20px;
   border-top: 1px solid var(--border);
   background: var(--bg);
 }
@@ -1014,4 +958,14 @@ body::before {
   background: var(--accent);
   color: #000;
   font-weight: 700;
+}
+
+.offline-badge {
+  font-size: 15px;
+  color: var(--alert);
+  letter-spacing: 2px;
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+  gap: 6px;
 }
