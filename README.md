@@ -2,7 +2,7 @@
 
 > Drag words. Build stories, let the checksum finish the sentence
 
-## DEMO FOR TESTING [DropSeed](https://dropseed.vercel.app/)
+# [DropSeed Playground](https://dropseed.vercel.app/)
 
 ## [TRY it live before using it](https://dropseed.vercel.app/)
 
