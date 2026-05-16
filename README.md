@@ -6,7 +6,7 @@
 
 ## [TRY it live before using it](https://dropseed.vercel.app/)
 
-## Don't generate seeds online ( only for testing ), install official [RELEASE](https://github.com/Raskollnikov/DropSeed/releases/edit/1.0.0)
+## Don't generate seeds online ( only for testing ), install official [RELEASE](https://github.com/Raskollnikov/DropSeed/releases/tag/1.0.0)
 
 ## I am using Tails Os + No Bluetooth/SSD/HDD/WIFI/Ethernet. only single html file ( with valid hash and that's it ) 
 
